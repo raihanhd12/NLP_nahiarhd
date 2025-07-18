@@ -1,0 +1,11 @@
+pandas
+fsspec
+huggingface_hub
+sastrawi
+datasets
+rich
+build
+twine
+nahiarhdNLP
+polars
+mlcroissant

@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include requirements.txt
+include pyproject.toml
+recursive-include src *.py
+recursive-include src *.txt
+recursive-include src *.csv
+recursive-include src *.json
+recursive-include src *.md
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-include nahiarhdNLP *.py *.txt *.csv *.json *.md
