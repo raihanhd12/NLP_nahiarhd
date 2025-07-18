@@ -5,7 +5,7 @@ Emoji normalizer for Indonesian text processing.
 import re
 from typing import Dict, List, Optional
 
-from nahiarhdNLP.mydatasets.loaders import DatasetLoader
+from nahiarhdNLP.datasets.loaders import DatasetLoader
 
 
 class EmojiConverter:
@@ -24,7 +24,7 @@ class EmojiConverter:
         self.emoji_data: List[Dict] = []
 
     def _load_data(self):
-        """Load emoji data from HuggingFace."""
+        """Load emoji data dari CSV."""
         try:
             loader = DatasetLoader()
             dataset = loader.load_emoji_dataset(language=self.language)
@@ -57,25 +57,12 @@ class EmojiConverter:
 
         except Exception as e:
             print(f"Warning: Could not load emoji dataset: {e}")
-            self._load_fallback_data()
-
-    def _load_fallback_data(self):
-        """Load fallback emoji data."""
-        # Basic fallback for common emojis
-        self.emoji_to_text = {}
-
-        # Build reverse mapping
-        self.text_to_emoji = {v: k for k, v in self.emoji_to_text.items()}
+            self.emoji_data = []
+            self.emoji_to_text = {}
+            self.text_to_emoji = {}
 
     def emoji_to_text_convert(self, text: str) -> str:
-        """Convert emoji to Indonesian text.
-
-        Args:
-            text: Text containing emojis
-
-        Returns:
-            Text with emojis converted to Indonesian words
-        """
+        """Convert emoji to Indonesian text."""
         if not text:
             return text
 
@@ -210,7 +197,7 @@ class EmojiConverter:
 
 # Utilitas agar bisa diimport langsung
 _emoji_converter = EmojiConverter()
-_emoji_converter._load_fallback_data()
+_emoji_converter._load_data()
 
 
 def emoji_to_words(text: str) -> str:

@@ -5,7 +5,7 @@ Stopword remover for Indonesian text processing.
 import re
 from typing import List
 
-from nahiarhdNLP.mydatasets.loaders import DatasetLoader
+from nahiarhdNLP.datasets.loaders import DatasetLoader
 
 
 class StopwordRemover:
@@ -23,180 +23,14 @@ class StopwordRemover:
         self.custom_stopwords: List[str] = []
 
     def _load_data(self):
-        """Load stopwords data from HuggingFace."""
+        """Load stopwords data dari CSV."""
         try:
             loader = DatasetLoader()
             dataset = loader.load_stopwords_dataset(language=self.language)
-
             self.stopwords = dataset
-
         except Exception as e:
             print(f"Warning: Could not load stopwords dataset: {e}")
-            self._load_fallback_data()
-
-    def _load_fallback_data(self):
-        """Load fallback stopwords data."""
-        # Basic Indonesian stopwords as fallback
-        self.stopwords = [
-            "yang",
-            "dan",
-            "di",
-            "ke",
-            "dari",
-            "untuk",
-            "dengan",
-            "ini",
-            "itu",
-            "atau",
-            "juga",
-            "bisa",
-            "akan",
-            "sudah",
-            "belum",
-            "tidak",
-            "bukan",
-            "saya",
-            "kamu",
-            "dia",
-            "mereka",
-            "kami",
-            "kita",
-            "anda",
-            "beliau",
-            "mereka",
-            "saya",
-            "aku",
-            "engkau",
-            "kau",
-            "kamu",
-            "anda",
-            "dia",
-            "ia",
-            "beliau",
-            "mereka",
-            "kami",
-            "kita",
-            "ini",
-            "itu",
-            "sini",
-            "situ",
-            "sana",
-            "mana",
-            "apa",
-            "siapa",
-            "kapan",
-            "dimana",
-            "kemana",
-            "dari mana",
-            "bagaimana",
-            "mengapa",
-            "kenapa",
-            "berapa",
-            "seberapa",
-            "yang mana",
-            "adalah",
-            "ialah",
-            "merupakan",
-            "menjadi",
-            "ada",
-            "tidak ada",
-            "bisa",
-            "dapat",
-            "mampu",
-            "harus",
-            "wajib",
-            "perlu",
-            "mesti",
-            "sudah",
-            "telah",
-            "belum",
-            "akan",
-            "bakal",
-            "mau",
-            "ingin",
-            "hendak",
-            "akan",
-            "sedang",
-            "lagi",
-            "masih",
-            "sudah",
-            "telah",
-            "pernah",
-            "belum pernah",
-            "selalu",
-            "sering",
-            "kadang",
-            "jarang",
-            "tidak pernah",
-            "sangat",
-            "amat",
-            "terlalu",
-            "cukup",
-            "agak",
-            "sedikit",
-            "banyak",
-            "semua",
-            "seluruh",
-            "setiap",
-            "masing-masing",
-            "beberapa",
-            "sebagian",
-            "kebanyakan",
-            "sebagian besar",
-            "hampir",
-            "hampir semua",
-            "tidak ada",
-            "tidak satupun",
-            "sama sekali",
-            "sama sekali tidak",
-            "tidak sama sekali",
-            "tidak pernah",
-            "tidak akan",
-            "tidak bisa",
-            "tidak dapat",
-            "tidak mampu",
-            "tidak boleh",
-            "tidak boleh",
-            "tidak perlu",
-            "tidak harus",
-            "tidak wajib",
-            "tidak mesti",
-            "tidak mau",
-            "tidak ingin",
-            "tidak hendak",
-            "tidak sedang",
-            "tidak lagi",
-            "tidak masih",
-            "tidak sudah",
-            "tidak telah",
-            "tidak pernah",
-            "tidak selalu",
-            "tidak sering",
-            "tidak kadang",
-            "tidak jarang",
-            "tidak sangat",
-            "tidak amat",
-            "tidak terlalu",
-            "tidak cukup",
-            "tidak agak",
-            "tidak sedikit",
-            "tidak banyak",
-            "tidak semua",
-            "tidak seluruh",
-            "tidak setiap",
-            "tidak masing-masing",
-            "tidak beberapa",
-            "tidak sebagian",
-            "tidak kebanyakan",
-            "tidak sebagian besar",
-            "tidak hampir",
-            "tidak hampir semua",
-            "tidak ada",
-            "tidak satupun",
-            "sama sekali",
-            "sama sekali tidak",
-            "tidak sama sekali",
-        ]
+            self.stopwords = []
 
     def add_custom_stopwords(self, stopwords: List[str]):
         """Add custom stopwords to the list.
@@ -238,14 +72,7 @@ class StopwordRemover:
         return word.lower() in self.get_all_stopwords()
 
     def remove_stopwords(self, text: str) -> str:
-        """Remove stopwords from text.
-
-        Args:
-            text: Input text
-
-        Returns:
-            Text with stopwords removed
-        """
+        """Remove stopwords from text."""
         if not text:
             return text
 
@@ -262,7 +89,10 @@ class StopwordRemover:
             elif not clean_word:  # Keep punctuation-only words
                 filtered_words.append(word)
 
-        return " ".join(filtered_words)
+        result = " ".join(filtered_words)
+        # Bersihkan spasi ganda
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def normalize(self, text: str) -> str:
         """Normalize text by removing stopwords.

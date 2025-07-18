@@ -3,15 +3,15 @@ nahiarhdNLP - Advanced Indonesian Natural Language Processing Library
 """
 
 # Import main modules
-from . import mydatasets, preprocessing
+from . import datasets, preprocessing
 
 # Version info
-__version__ = "1.0.4"
-__author__ = "indoNLP Team"
-__email__ = "team@indonlp.id"
+__version__ = "1.0.6"
+__author__ = "Raihan Hidayatullah Djunaedi"
+__email__ = "raihanhd.dev@gmail.com"
 
 # Export main modules
 __all__ = [
     "preprocessing",
-    "mydatasets",
+    "datasets",
 ]

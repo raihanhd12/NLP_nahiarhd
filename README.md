@@ -18,7 +18,7 @@ import nahiarhdNLP
 from nahiarhdNLP import preprocessing
 
 # Import module datasets
-from nahiarhdNLP import mydatasets
+from nahiarhdNLP import datasets
 
 # Atau import fungsi spesifik
 from nahiarhdNLP.preprocessing import preprocess, remove_html, replace_slang
@@ -188,22 +188,24 @@ print(corrected)
 ### 9. 📊 Dataset Loader
 
 ```python
-from nahiarhdNLP.mydatasets import DatasetLoader
+from nahiarhdNLP.datasets import DatasetLoader
 
 loader = DatasetLoader()
 
-# Load stopwords
+# Load stopwords (dari file CSV lokal)
 stopwords = loader.load_stopwords_dataset()
 print(f"Jumlah stopwords: {len(stopwords)}")
 
-# Load slang dictionary
+# Load slang dictionary (dari file CSV lokal)
 slang_dict = loader.load_slang_dataset()
 print(f"Jumlah slang: {len(slang_dict)}")
 
-# Load emoji dictionary
+# Load emoji dictionary (dari file CSV lokal)
 emoji_dict = loader.load_emoji_dataset()
 print(f"Jumlah emoji: {len(emoji_dict)}")
 ```
+
+> **Catatan:** Semua dataset (stopword, slang, emoji) di-load langsung dari file CSV di folder `nahiarhdNLP/datasets/`. Tidak ada proses cache atau download dari HuggingFace.
 
 ### 10. 🔄 Pipeline Custom
 
@@ -267,33 +269,16 @@ except Exception as e:
 
 ## ⚡ Performance & Caching
 
-nahiarhdNLP menggunakan sistem caching untuk mempercepat loading dataset:
+Mulai versi terbaru, nahiarhdNLP **tidak lagi menggunakan cache atau download dataset dari HuggingFace**. Semua dataset di-load langsung dari file CSV lokal yang sudah disediakan di folder `nahiarhdNLP/datasets/`.
 
-- **Pertama kali**: Download dataset dari HuggingFace (3-4 detik)
-- **Kedua kali**: Load dari cache lokal (0.003 detik)
-- **Cache tersimpan** di `~/.nahiarhdNLP/cache/`
-- **Fallback data** jika HuggingFace down
-
-```python
-from nahiarhdNLP.mydatasets.loaders import DatasetLoader
-
-loader = DatasetLoader()
-
-# Clear cache jika perlu
-loader.clear_cache()
-
-# Cek info cache
-cache_info = loader.get_cache_info()
-print(cache_info)
-```
+- Tidak ada proses cache otomatis
+- Tidak ada fallback data
+- Tidak ada dependensi ke HuggingFace untuk dataset
 
 ## 📦 Dependencies
 
 Package ini membutuhkan:
 
-- `datasets` - untuk load dataset dari HuggingFace
+- `pandas` - untuk load dan proses dataset CSV
 - `sastrawi` - untuk stemming (opsional)
-- `pandas` - untuk data processing
 - `rich` - untuk output formatting
-- `fsspec` - untuk file system operations
-- `huggingface_hub` - untuk akses HuggingFace
