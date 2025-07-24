@@ -2,14 +2,12 @@
 nahiarhdNLP preprocessing module.
 """
 
-from .cleaning.spell_corrector import SpellCorrector
-
 # Import kelas-kelas untuk penggunaan advanced
 from .cleaning.text_cleaner import TextCleaner
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
 from .normalization.emoji import EmojiConverter
-from .normalization.slang import SlangNormalizer
+from .normalization.spell_corrector import SpellCorrector
 from .tokenization.tokenizer import Tokenizer
 
 # Import semua fungsi utama dari utils
@@ -17,8 +15,6 @@ from .utils import (  # Fungsi dasar preprocessing; Fungsi-fungsi pembersihan in
     clean_text,
     correct_spelling,
     emoji_to_words,
-    pipeline,
-    preprocess,
     remove_extra_spaces,
     remove_hashtags,
     remove_html,
@@ -68,7 +64,6 @@ __all__ = [
     "SpellCorrector",
     "StopwordRemover",
     "Stemmer",
-    "SlangNormalizer",
     "EmojiConverter",
     "Tokenizer",
 ]

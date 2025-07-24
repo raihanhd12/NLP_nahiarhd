@@ -1,7 +1,7 @@
 pandas
 fsspec
 huggingface_hub
-sastrawi
+Sastrawi
 datasets
 rich
 build

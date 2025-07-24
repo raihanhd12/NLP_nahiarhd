@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -28,11 +29,12 @@ class DatasetLoader:
         try:
             df = pd.read_csv(csv_path)
             # Kolom: slang, formal
-            data = [
-                {"slang": row["slang"], "formal": row["formal"]}
-                for _, row in df.iterrows()
-                if pd.notnull(row["slang"]) and pd.notnull(row["formal"])
-            ]
+            data = []
+            for idx in range(len(df)):
+                slang_val = df.iloc[idx, 0]
+                formal_val = df.iloc[idx, 1]
+                if pd.notnull(slang_val) and pd.notnull(formal_val):
+                    data.append({"slang": str(slang_val), "formal": str(formal_val)})
             return data
         except Exception as e:
             print(f"Error loading slang from CSV: {e}")
@@ -45,16 +47,24 @@ class DatasetLoader:
             df = pd.read_csv(csv_path)
             # Kolom: emoji, name_id, alias, aliases (aliases berupa string list)
             data = []
-            for _, row in df.iterrows():
+            for idx in range(len(df)):
+                row = df.iloc[idx]
+                aliases_val = row.get("aliases", "")
+                aliases_list = []
+                if pd.notnull(aliases_val):
+                    aliases_str = str(aliases_val).strip()
+                    if aliases_str and aliases_str != "nan":
+                        try:
+                            aliases_list = eval(aliases_str)
+                        except Exception as e:
+                            print(f"Error loading emoji from CSV: {e}")
+                            aliases_list = []
+
                 item = {
-                    "emoji": row.get("emoji", ""),
-                    "name_id": row.get("name_id", ""),
-                    "alias": row.get("alias", ""),
-                    "aliases": (
-                        eval(row["aliases"])
-                        if pd.notnull(row.get("aliases", ""))
-                        else []
-                    ),
+                    "emoji": str(row.get("emoji", "")),
+                    "name_id": str(row.get("name_id", "")),
+                    "alias": str(row.get("alias", "")),
+                    "aliases": aliases_list,
                 }
                 data.append(item)
             return data
@@ -62,4 +72,13 @@ class DatasetLoader:
             print(f"Error loading emoji from CSV: {e}")
             return []
 
-    # Fallback-fallback tidak perlu lagi, cache juga dihapus
+    def load_wordlist_dataset(self, language="indonesian"):
+        """Load wordlist dari JSON."""
+        json_path = self.datasets_dir / "wordlist.json"
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, list) else []
+        except Exception as e:
+            print(f"Error loading wordlist from JSON: {e}")
+            return []

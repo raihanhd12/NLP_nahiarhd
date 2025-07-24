@@ -11,34 +11,30 @@ pip install nahiarhdNLP
 ## 📦 Import Library
 
 ```python
-# Import package utama
-import nahiarhdNLP
-
 # Import module preprocessing
 from nahiarhdNLP import preprocessing
 
-# Import module datasets
-from nahiarhdNLP import datasets
+# Import fungsi spesifik
+from nahiarhdNLP.preprocessing import (
+    remove_html, remove_url, remove_mentions, replace_slang,
+    emoji_to_words, correct_spelling, clean_text
+)
 
-# Atau import fungsi spesifik
-from nahiarhdNLP.preprocessing import preprocess, remove_html, replace_slang
+# Import kelas untuk penggunaan advanced
+from nahiarhdNLP.preprocessing import (
+    TextCleaner, SpellCorrector, StopwordRemover,
+    Stemmer, EmojiConverter, Tokenizer
+)
+
+# Import dataset loader (dua cara)
+from nahiarhdNLP.datasets import DatasetLoader
+# atau
+from nahiarhdNLP.datasets.loaders import DatasetLoader
 ```
 
-## Contoh Penggunaan
+## 📋 Contoh Penggunaan
 
-### 1. 🎯 Fungsi Preprocess All-in-One
-
-```python
-from nahiarhdNLP import preprocessing
-
-# Preprocessing lengkap dengan satu fungsi
-teks = "Halooo emg siapa yg nanya? 😀"
-hasil = preprocessing.preprocess(teks)
-print(hasil)
-# Output: "halo wajah_gembira"
-```
-
-### 2. 🧹 TextCleaner - Membersihkan Teks
+### 1. 🧹 TextCleaner - Membersihkan Teks
 
 ```python
 from nahiarhdNLP.preprocessing import TextCleaner
@@ -56,62 +52,59 @@ mention_text = "Halo @user123 apa kabar?"
 clean_result = cleaner.clean_mentions(mention_text)
 print(clean_result)
 # Output: "Halo  apa kabar?"
+
+# Membersihkan teks secara menyeluruh
+messy_text = "Halooo!!! @user #trending https://example.com 😀"
+clean_result = cleaner.clean(messy_text)
+print(clean_result)
+# Output: teks yang sudah dibersihkan
 ```
 
-### 3. ✏️ SpellCorrector - Koreksi Ejaan
+### 2. ✏️ SpellCorrector - Koreksi Ejaan & Normalisasi Slang
 
 ```python
 from nahiarhdNLP.preprocessing import SpellCorrector
 
 spell = SpellCorrector()
 
-# Koreksi kata
+# Koreksi kata salah eja
 word = "mencri"
-corrected = spell.correct(word)
+corrected = spell.correct_word(word)
 print(corrected)
 # Output: "mencuri"
 
-# Koreksi kalimat
-sentence = "saya mencri informsi"
+# Koreksi kalimat lengkap (termasuk normalisasi slang)
+sentence = "gw lg mencri informsi"
 corrected = spell.correct_sentence(sentence)
 print(corrected)
-# Output: "saya mencuri informasi"
+# Output: "saya lagi mencuri informasi"
 ```
 
-### 4. 🚫 StopwordRemover - Menghapus Stopwords
+### 3. 🚫 StopwordRemover - Menghapus Stopwords
 
 ```python
 from nahiarhdNLP.preprocessing import StopwordRemover
 
 stopword = StopwordRemover()
+stopword._load_data()  # Load dataset stopwords
 
 # Menghapus stopwords
 text = "saya suka makan nasi goreng"
 result = stopword.remove_stopwords(text)
 print(result)
 # Output: "suka makan nasi goreng"
+
+# Menambah custom stopwords
+stopword.add_custom_stopwords(["adalah", "akan"])
 ```
 
-### 5. 🔄 SlangNormalizer - Normalisasi Slang
-
-```python
-from nahiarhdNLP.preprocessing import SlangNormalizer
-
-slang = SlangNormalizer()
-
-# Normalisasi kata slang
-text = "gw lg di rmh"
-result = slang.normalize(text)
-print(result)
-# Output: "saya lagi di rumah"
-```
-
-### 6. 😀 EmojiConverter - Konversi Emoji
+### 4. 😀 EmojiConverter - Konversi Emoji
 
 ```python
 from nahiarhdNLP.preprocessing import EmojiConverter
 
 emoji = EmojiConverter()
+emoji._load_data()  # Load dataset emoji
 
 # Emoji ke teks
 emoji_text = "😀 😂 😍"
@@ -126,7 +119,7 @@ print(emoji_result)
 # Output: "😀"
 ```
 
-### 7. 🔪 Tokenizer - Tokenisasi
+### 5. 🔪 Tokenizer - Tokenisasi
 
 ```python
 from nahiarhdNLP.preprocessing import Tokenizer
@@ -140,33 +133,43 @@ print(tokens)
 # Output: ['ini', 'contoh', 'tokenisasi']
 ```
 
-### 8. 🛠️ Fungsi Individual
+### 6. 🌿 Stemmer - Stemming (Memerlukan Sastrawi)
+
+```python
+from nahiarhdNLP.preprocessing import Stemmer
+
+try:
+    stemmer = Stemmer()
+    text = "bermain-main dengan senang"
+    result = stemmer.stem(text)
+    print(result)
+    # Output: "main main dengan senang"
+except ImportError:
+    print("Install Sastrawi dengan: pip install Sastrawi")
+```
+
+### 7. 🛠️ Fungsi Individual
 
 ```python
 from nahiarhdNLP.preprocessing import (
     remove_html, remove_url, remove_mentions,
-    replace_slang, emoji_to_words, correct_spelling
+    replace_slang, emoji_to_words, correct_spelling,
+    remove_stopwords, clean_text
 )
 
 # Menghapus HTML
 html_text = "website <a href='https://google.com'>google</a>"
-clean_text = remove_html(html_text)
-print(clean_text)
+clean_text_result = remove_html(html_text)
+print(clean_text_result)
 # Output: "website google"
 
 # Menghapus URL
 url_text = "kunjungi https://google.com sekarang!"
-clean_text = remove_url(url_text)
-print(clean_text)
+clean_text_result = remove_url(url_text)
+print(clean_text_result)
 # Output: "kunjungi  sekarang!"
 
-# Menghapus mentions
-mention_text = "Halo @user123 apa kabar?"
-clean_text = remove_mentions(mention_text)
-print(clean_text)
-# Output: "Halo  apa kabar?"
-
-# Normalisasi slang
+# Normalisasi slang (menggunakan SpellCorrector)
 slang_text = "emg siapa yg nanya?"
 normal_text = replace_slang(slang_text)
 print(normal_text)
@@ -183,73 +186,47 @@ spell_text = "saya mencri informsi"
 corrected = correct_spelling(spell_text)
 print(corrected)
 # Output: "saya mencuri informasi"
+
+# Cleaning menyeluruh
+messy_text = "Halooo!!! @user #trending https://example.com"
+cleaned = clean_text(messy_text)
+print(cleaned)
+# Output: teks yang sudah dibersihkan
 ```
 
-### 9. 📊 Dataset Loader
+### 8. 📊 Dataset Loader
 
 ```python
 from nahiarhdNLP.datasets import DatasetLoader
 
 loader = DatasetLoader()
 
-# Load stopwords (dari file CSV lokal)
+# Load stopwords dari CSV lokal
 stopwords = loader.load_stopwords_dataset()
 print(f"Jumlah stopwords: {len(stopwords)}")
 
-# Load slang dictionary (dari file CSV lokal)
+# Load slang dictionary dari CSV lokal
 slang_dict = loader.load_slang_dataset()
 print(f"Jumlah slang: {len(slang_dict)}")
 
-# Load emoji dictionary (dari file CSV lokal)
+# Load emoji dictionary dari CSV lokal
 emoji_dict = loader.load_emoji_dataset()
 print(f"Jumlah emoji: {len(emoji_dict)}")
+
+# Load wordlist dari JSON lokal
+wordlist = loader.load_wordlist_dataset()
+print(f"Jumlah kata: {len(wordlist)}")
 ```
 
-> **Catatan:** Semua dataset (stopword, slang, emoji) di-load langsung dari file CSV di folder `nahiarhdNLP/datasets/`. Tidak ada proses cache atau download dari HuggingFace.
-
-### 10. 🔄 Pipeline Custom
-
-```python
-from nahiarhdNLP.preprocessing import pipeline, replace_word_elongation, replace_slang
-
-# Buat pipeline custom
-custom_pipeline = pipeline([
-    replace_word_elongation,
-    replace_slang
-])
-
-# Jalankan pipeline
-text = "Knp emg gk mw makan kenapaaa???"
-result = custom_pipeline(text)
-print(result)
-# Output: "mengapa memang tidak mau makan mengapa???"
-```
-
-## ⚙️ Parameter Preprocess
-
-Fungsi `preprocess()` memiliki parameter opsional:
-
-```python
-result = nahiarhdNLP.preprocessing.preprocess(
-    text="Halooo emg siapa yg nanya? 😀",
-    remove_html_tags=True,      # Hapus HTML tags
-    remove_urls=True,           # Hapus URL
-    remove_stopwords_flag=True, # Hapus stopwords
-    replace_slang_flag=True,    # Normalisasi slang
-    replace_elongation=True,    # Atasi word elongation
-    convert_emoji=True,         # Konversi emoji
-    correct_spelling_flag=False,# Koreksi ejaan (lambat)
-    stem_text_flag=False,       # Stemming
-    to_lowercase=True           # Lowercase
-)
-```
+> **Catatan:** Semua dataset (stopword, slang, emoji, wordlist) di-load langsung dari file CSV/JSON di folder `nahiarhdNLP/datasets/`. Tidak ada proses cache atau download dari HuggingFace.
 
 ## 🚨 Error Handling
 
 ```python
 try:
-    from nahiarhdNLP import preprocessing
-    result = preprocessing.preprocess("test")
+    from nahiarhdNLP.preprocessing import SpellCorrector
+    spell = SpellCorrector()
+    result = spell.correct_sentence("test")
 except ImportError:
     print("Package nahiarhdNLP belum terinstall")
     print("Install dengan: pip install nahiarhdNLP")
@@ -259,26 +236,86 @@ except Exception as e:
 
 ## 💡 Tips Penggunaan
 
-1. **Untuk preprocessing cepat**: Gunakan `preprocess()` dengan parameter default
+1. **Untuk cleaning dasar**: Gunakan `clean_text()` atau kelas `TextCleaner`
 2. **Untuk kontrol penuh**: Gunakan kelas individual (`TextCleaner`, `SpellCorrector`, dll)
-3. **Untuk kustomisasi**: Gunakan `pipeline()` dengan fungsi yang diinginkan
-4. **Untuk koreksi ejaan**: Aktifkan `correct_spelling_flag=True` (tapi lebih lambat)
-5. **Untuk stemming**: Aktifkan `stem_text_flag=True` (perlu install Sastrawi)
-6. **Untuk performa optimal**: Dataset akan di-cache otomatis setelah download pertama
-7. **Untuk development**: Gunakan fallback data jika HuggingFace down
+3. **Untuk spell correction + slang**: Gunakan `SpellCorrector` yang menggabungkan kedua fitur
+4. **Untuk stemming**: Install Sastrawi terlebih dahulu: `pip install Sastrawi`
+5. **Untuk load dataset**: Gunakan `DatasetLoader` dari `nahiarhdNLP.datasets`
+6. **Untuk inisialisasi kelas**: Jangan lupa panggil `_load_data()` untuk kelas yang memerlukan dataset
 
-## ⚡ Performance & Caching
+## ⚡ Performance & Dataset
 
-Mulai versi terbaru, nahiarhdNLP **tidak lagi menggunakan cache atau download dataset dari HuggingFace**. Semua dataset di-load langsung dari file CSV lokal yang sudah disediakan di folder `nahiarhdNLP/datasets/`.
+Mulai versi terbaru, nahiarhdNLP **menggunakan dataset lokal** yang sudah disediakan:
 
-- Tidak ada proses cache otomatis
-- Tidak ada fallback data
-- Tidak ada dependensi ke HuggingFace untuk dataset
+- **Stopwords**: File `stop_word.csv`
+- **Slang Dictionary**: File `slang.csv`
+- **Emoji Mapping**: File `emoji.csv`
+- **Wordlist**: File `wordlist.json`
+- **KBBI Dictionary**: File `kata_dasar_kbbi.csv`
+
+Semua dataset tersimpan di folder `nahiarhdNLP/datasets/` dan diakses melalui `DatasetLoader`.
 
 ## 📦 Dependencies
 
 Package ini membutuhkan:
 
-- `pandas` - untuk load dan proses dataset CSV
+- `pandas` - untuk load dan proses dataset CSV/JSON
 - `sastrawi` - untuk stemming (opsional)
-- `rich` - untuk output formatting
+- `rich` - untuk output formatting (opsional)
+
+## 🔧 Struktur Modul
+
+```
+nahiarhdNLP/
+├── datasets/
+│   ├── loaders.py          # DatasetLoader class
+│   ├── emoji.csv           # Dataset emoji
+│   ├── slang.csv           # Dataset slang
+│   ├── stop_word.csv       # Dataset stopwords
+│   ├── wordlist.json       # Dataset wordlist
+│   └── kata_dasar_kbbi.csv # Dataset KBBI
+├── preprocessing/
+│   ├── cleaning/
+│   │   └── text_cleaner.py # TextCleaner class
+│   ├── linguistic/
+│   │   ├── stemmer.py      # Stemmer class
+│   │   └── stopwords.py    # StopwordRemover class
+│   ├── normalization/
+│   │   ├── emoji.py        # EmojiConverter class
+│   │   └── spell_corrector.py # SpellCorrector class
+│   ├── tokenization/
+│   │   └── tokenizer.py    # Tokenizer class
+│   └── utils.py            # Fungsi utility individual
+└── demo.py                 # File demo penggunaan
+```
+
+## 🆕 Perubahan Versi 1.1.0
+
+- ✅ Menggabungkan spell correction dan slang normalization dalam `SpellCorrector`
+- ✅ Semua dataset menggunakan file lokal (CSV/JSON)
+- ✅ Struktur yang lebih terorganisir dengan pemisahan kelas dan fungsi
+- ✅ Penambahan `DatasetLoader` untuk manajemen dataset terpusat
+- ❌ Menghapus dependency HuggingFace untuk dataset
+- ❌ Menghapus fitur `preprocess()` all-in-one dan `pipeline()` (akan ditambahkan di versi mendatang)
+
+## 🐛 Troubleshooting
+
+**Error saat import dataset:**
+
+```python
+# Pastikan memanggil _load_data() untuk kelas yang memerlukan dataset
+stopword = StopwordRemover()
+stopword._load_data()  # Penting!
+```
+
+**Error Sastrawi tidak ditemukan:**
+
+```bash
+pip install Sastrawi
+```
+
+**Error pandas tidak ditemukan:**
+
+```bash
+pip install pandas
+```

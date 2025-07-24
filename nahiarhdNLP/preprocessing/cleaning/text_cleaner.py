@@ -38,7 +38,9 @@ class TextCleaner:
 
         # Pattern untuk URL
         url_pattern = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-        return re.sub(url_pattern, "", text)
+        result = re.sub(url_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def clean_mentions(self, text: str) -> str:
         """Remove mentions (@username) from text.
@@ -54,7 +56,9 @@ class TextCleaner:
 
         # Pattern untuk mentions
         mention_pattern = r"@\w+"
-        return re.sub(mention_pattern, "", text)
+        result = re.sub(mention_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def clean_hashtags(self, text: str) -> str:
         """Remove hashtags (#tag) from text.
@@ -70,7 +74,9 @@ class TextCleaner:
 
         # Pattern untuk hashtags
         hashtag_pattern = r"#\w+"
-        return re.sub(hashtag_pattern, "", text)
+        result = re.sub(hashtag_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def clean_numbers(self, text: str) -> str:
         """Remove numbers from text.
@@ -86,7 +92,9 @@ class TextCleaner:
 
         # Pattern untuk numbers
         number_pattern = r"\d+"
-        return re.sub(number_pattern, "", text)
+        result = re.sub(number_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def clean_punctuation(self, text: str) -> str:
         """Remove punctuation from text.
@@ -102,7 +110,9 @@ class TextCleaner:
 
         # Pattern untuk punctuation
         punctuation_pattern = r"[^\w\s]"
-        return re.sub(punctuation_pattern, "", text)
+        result = re.sub(punctuation_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def to_lowercase(self, text: str) -> str:
         """Convert text to lowercase.
@@ -161,7 +171,9 @@ class TextCleaner:
         """
         # Keep alphanumeric, spaces, and common punctuation
         special_pattern = r'[^\w\s.,!?;:()"\'-]'
-        return re.sub(special_pattern, "", text)
+        result = re.sub(special_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
 
     def clean_whitespace(self, text: str) -> str:
         """Clean whitespace characters.
@@ -176,7 +188,8 @@ class TextCleaner:
         text = re.sub(r"\t", " ", text)
         text = re.sub(r"\n", " ", text)
         text = re.sub(r"\r", " ", text)
-        return text
+        result = re.sub(r"\s+", " ", text).strip()
+        return result
 
     def clean(self, text: str) -> str:
         """Clean text using all cleaning methods.

@@ -3,22 +3,19 @@ Utility functions for preprocessing Indonesian text.
 """
 
 import re
-from typing import Callable, List
-
-from .cleaning.spell_corrector import SpellCorrector
+from typing import List
 
 # Import kelas-kelas yang sudah ada
 from .cleaning.text_cleaner import TextCleaner
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
 from .normalization.emoji import EmojiConverter
-from .normalization.slang import SlangNormalizer
+from .normalization.spell_corrector import SpellCorrector
 from .tokenization.tokenizer import Tokenizer
 
 # Inisialisasi instance global untuk fungsi-fungsi utility (lazy loading)
 _text_cleaner = None
 _stopword_remover = None
-_slang_normalizer = None
 _emoji_converter = None
 _spell_corrector = None
 _stemmer = None
@@ -38,14 +35,6 @@ def _get_stopword_remover():
         _stopword_remover = StopwordRemover()
         _stopword_remover._load_data()
     return _stopword_remover
-
-
-def _get_slang_normalizer():
-    global _slang_normalizer
-    if _slang_normalizer is None:
-        _slang_normalizer = SlangNormalizer()
-        _slang_normalizer._load_data()
-    return _slang_normalizer
 
 
 def _get_emoji_converter():
@@ -161,7 +150,8 @@ def replace_slang(text: str) -> str:
     if not text:
         return text
 
-    return _get_slang_normalizer().normalize(text)
+    # Menggunakan SpellCorrector yang sudah include slang normalization + spell correction
+    return _get_spell_corrector().correct_sentence(text)
 
 
 def replace_word_elongation(text: str) -> str:
@@ -511,114 +501,3 @@ def clean_text(text: str) -> str:
         return text
 
     return _get_text_cleaner().clean(text)
-
-
-def pipeline(functions: List[Callable[[str], str]]) -> Callable[[str], str]:
-    """Membuat pipeline dari sequence fungsi preprocessing.
-
-    Args:
-        functions: List fungsi preprocessing yang akan dijalankan secara berurutan
-
-    Returns:
-        Fungsi pipeline yang dapat digunakan untuk memproses teks
-
-    Example:
-        >>> from src.preprocessing import pipeline, replace_word_elongation, replace_slang
-        >>> pipe = pipeline([replace_word_elongation, replace_slang])
-        >>> pipe("Knp emg gk mw makan kenapaaa???")
-        "mengapa memang tidak mau makan mengapa???"
-    """
-
-    def process_text(text: str) -> str:
-        """Memproses teks melalui semua fungsi dalam pipeline."""
-        if not text:
-            return text
-
-        result = text
-        for func in functions:
-            result = func(result)
-
-        return result
-
-    return process_text
-
-
-def preprocess(
-    text: str,
-    remove_html_tags: bool = True,
-    remove_urls: bool = True,
-    remove_stopwords_flag: bool = True,
-    replace_slang_flag: bool = True,
-    replace_elongation: bool = True,
-    convert_emoji: bool = True,
-    correct_spelling_flag: bool = False,
-    stem_text_flag: bool = False,
-    to_lowercase: bool = True,
-) -> str:
-    """Fungsi preprocessing all-in-one dengan berbagai opsi.
-
-    Args:
-        text: Teks yang akan diproses
-        remove_html_tags: Apakah menghapus HTML tags
-        remove_urls: Apakah menghapus URL
-        remove_stopwords_flag: Apakah menghapus stopwords
-        replace_slang_flag: Apakah mengganti slang
-        replace_elongation: Apakah mengatasi word elongation
-        convert_emoji: Apakah mengubah emoji ke kata
-        correct_spelling_flag: Apakah mengoreksi ejaan
-        stem_text_flag: Apakah melakukan stemming
-        to_lowercase: Apakah mengubah ke lowercase
-
-    Returns:
-        Teks yang sudah diproses
-
-    Example:
-        >>> from src.preprocessing import preprocess
-        >>> preprocess("Halooo emg siapa yg nanya? 😀")
-        "halo memang siapa yang bertanya wajah_gembira"
-    """
-    if not text:
-        return text
-
-    result = text
-
-    # Bersihkan HTML tags
-    if remove_html_tags:
-        result = remove_html(result)
-
-    # Bersihkan URL
-    if remove_urls:
-        result = remove_url(result)
-
-    # Atasi word elongation
-    if replace_elongation:
-        result = replace_word_elongation(result)
-
-    # Ubah emoji ke kata
-    if convert_emoji:
-        result = emoji_to_words(result)
-
-    # Ganti slang
-    if replace_slang_flag:
-        result = replace_slang(result)
-
-    # Koreksi ejaan (opsional karena lambat)
-    if correct_spelling_flag:
-        result = correct_spelling(result)
-
-    # Hapus stopwords
-    if remove_stopwords_flag:
-        result = remove_stopwords(result)
-
-    # Stemming (opsional)
-    if stem_text_flag:
-        result = stem_text(result)
-
-    # Lowercase
-    if to_lowercase:
-        result = result.lower()
-
-    # Bersihkan spasi berlebih
-    result = re.sub(r"\s+", " ", result).strip()
-
-    return result
