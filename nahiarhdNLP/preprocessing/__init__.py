@@ -1,8 +1,11 @@
 """
-nahiarhdNLP preprocessing module.
+nahiarhdNLP.preprocessing - Indonesian text preprocessing utilities
+
+This module provides comprehensive text preprocessing functionality for Indonesian language,
+including cleaning, normalization, tokenization, and linguistic processing.
 """
 
-# Import kelas-kelas untuk penggunaan advanced
+# Import all classes for advanced usage
 from .cleaning.text_cleaner import TextCleaner
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
@@ -10,11 +13,21 @@ from .normalization.emoji import EmojiConverter
 from .normalization.spell_corrector import SpellCorrector
 from .tokenization.tokenizer import Tokenizer
 
-# Import semua fungsi utama dari utils
-from .utils import (  # Fungsi dasar preprocessing; Fungsi-fungsi pembersihan individual; Fungsi pipeline dan preprocessing all-in-one
-    clean_text,
-    correct_spelling,
+# Import all individual utility functions
+from .utils import (  # Basic cleaning functions; Normalization and correction functions; Emoji functions; Linguistic functions; Pipeline functions; Word-preserving cleaning functions
+    Pipeline,
+    clean_all_preserve_words,
+    clean_currency_preserve_numbers,
+    clean_emails_preserve_text,
+    clean_hashtags_preserve_tags,
+    clean_html_preserve_content,
+    clean_mentions_preserve_username,
+    clean_phones_preserve_numbers,
+    clean_urls_preserve_domain,
     emoji_to_words,
+    pipeline,
+    preprocess,
+    remove_emoji,
     remove_extra_spaces,
     remove_hashtags,
     remove_html,
@@ -25,29 +38,20 @@ from .utils import (  # Fungsi dasar preprocessing; Fungsi-fungsi pembersihan in
     remove_stopwords,
     remove_url,
     remove_whitespace,
-    replace_slang,
-    replace_word_elongation,
+    replace_repeated_chars,
+    replace_spell_corrector,
     stem_text,
     to_lowercase,
     tokenize,
     words_to_emoji,
 )
 
-# Definisikan semua fungsi yang bisa diimport
+# Define what gets imported with "from nahiarhdNLP.preprocessing import *"
 __all__ = [
-    # Fungsi dasar
+    # Individual functions
     "remove_html",
+    "remove_emoji",
     "remove_url",
-    "remove_stopwords",
-    "replace_slang",
-    "replace_word_elongation",
-    "emoji_to_words",
-    "words_to_emoji",
-    "correct_spelling",
-    "stem_text",
-    "tokenize",
-    "clean_text",
-    # Fungsi-fungsi pembersihan individual
     "remove_mentions",
     "remove_hashtags",
     "remove_numbers",
@@ -56,14 +60,31 @@ __all__ = [
     "remove_special_chars",
     "remove_whitespace",
     "to_lowercase",
-    # Fungsi pipeline
+    "replace_spell_corrector",
+    "replace_repeated_chars",
+    "emoji_to_words",
+    "words_to_emoji",
+    "remove_stopwords",
+    "stem_text",
+    "tokenize",
+    # Pipeline functions
+    "Pipeline",
     "pipeline",
     "preprocess",
-    # Kelas untuk advanced usage
+    # Classes
     "TextCleaner",
-    "SpellCorrector",
-    "StopwordRemover",
     "Stemmer",
+    "StopwordRemover",
     "EmojiConverter",
+    "SpellCorrector",
     "Tokenizer",
+    # Word-preserving cleaning functions
+    "clean_urls_preserve_domain",
+    "clean_mentions_preserve_username",
+    "clean_hashtags_preserve_tags",
+    "clean_html_preserve_content",
+    "clean_emails_preserve_text",
+    "clean_phones_preserve_numbers",
+    "clean_currency_preserve_numbers",
+    "clean_all_preserve_words",
 ]

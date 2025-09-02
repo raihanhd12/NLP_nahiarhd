@@ -15,25 +15,30 @@ class TextCleaner:
             language: Language code
             **kwargs: Additional arguments
         """
+        self.remove_html = kwargs.get("remove_html", True)
         self.remove_urls = kwargs.get("remove_urls", True)
         self.remove_mentions = kwargs.get("remove_mentions", True)
         self.remove_hashtags = kwargs.get("remove_hashtags", True)
         self.remove_numbers = kwargs.get("remove_numbers", False)
         self.remove_punctuation = kwargs.get("remove_punctuation", False)
+        self.remove_emoji = kwargs.get("remove_emoji", False)
         self.lowercase = kwargs.get("lowercase", True)
         self.remove_extra_spaces = kwargs.get("remove_extra_spaces", True)
         self.remove_repeated_chars = kwargs.get("remove_repeated_chars", True)
+        self.remove_special_chars = kwargs.get("remove_special_chars", True)
+        self.remove_whitespace = kwargs.get("remove_whitespace", True)
 
-    def clean_urls(self, text: str) -> str:
+    def clean_urls(self, text: str, force: bool = False) -> str:
         """Remove URLs from text.
 
         Args:
             text: Input text
+            force: Force remove URLs even if remove_urls flag is False
 
         Returns:
             Text with URLs removed
         """
-        if not self.remove_urls:
+        if not self.remove_urls and not force:
             return text
 
         # Pattern untuk URL
@@ -42,16 +47,17 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_mentions(self, text: str) -> str:
+    def clean_mentions(self, text: str, force: bool = False) -> str:
         """Remove mentions (@username) from text.
 
         Args:
             text: Input text
+            force: Force remove mentions even if remove_mentions flag is False
 
         Returns:
             Text with mentions removed
         """
-        if not self.remove_mentions:
+        if not self.remove_mentions and not force:
             return text
 
         # Pattern untuk mentions
@@ -60,16 +66,17 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_hashtags(self, text: str) -> str:
+    def clean_hashtags(self, text: str, force: bool = False) -> str:
         """Remove hashtags (#tag) from text.
 
         Args:
             text: Input text
+            force: Force remove hashtags even if remove_hashtags flag is False
 
         Returns:
             Text with hashtags removed
         """
-        if not self.remove_hashtags:
+        if not self.remove_hashtags and not force:
             return text
 
         # Pattern untuk hashtags
@@ -78,16 +85,17 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_numbers(self, text: str) -> str:
+    def clean_numbers(self, text: str, force: bool = False) -> str:
         """Remove numbers from text.
 
         Args:
             text: Input text
+            force: Force remove numbers even if remove_numbers flag is False
 
         Returns:
             Text with numbers removed
         """
-        if not self.remove_numbers:
+        if not self.remove_numbers and not force:
             return text
 
         # Pattern untuk numbers
@@ -96,16 +104,17 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_punctuation(self, text: str) -> str:
+    def clean_punctuation(self, text: str, force: bool = False) -> str:
         """Remove punctuation from text.
 
         Args:
             text: Input text
+            force: Force remove punctuation even if remove_punctuation flag is False
 
         Returns:
             Text with punctuation removed
         """
-        if not self.remove_punctuation:
+        if not self.remove_punctuation and not force:
             return text
 
         # Pattern untuk punctuation
@@ -175,6 +184,44 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
+    def clean_html(self, text: str, force: bool = False) -> str:
+        """Remove HTML tags from text.
+
+        Args:
+            text: Input text with HTML tags
+            force: Force remove HTML even if remove_html flag is False
+
+        Returns:
+            Text with HTML tags removed
+        """
+        if not self.remove_html and not force:
+            return text
+
+        # Pattern untuk HTML tags
+        html_pattern = r"<[^>]+>"
+        result = re.sub(html_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
+
+    def clean_emoji(self, text: str) -> str:
+        """Remove emoji from text.
+
+        Args:
+            text: Input text with emoji
+
+        Returns:
+            Text with emoji removed
+        """
+        if not self.remove_emoji:
+            return text
+
+        # Pattern untuk emoji (Unicode ranges)
+        # Menangkap semua karakter emoji berdasarkan Unicode blocks
+        emoji_pattern = r"[\U0001F600-\U0001F64F]|[\U0001F300-\U0001F5FF]|[\U0001F680-\U0001F6FF]|[\U0001F700-\U0001F77F]|[\U0001F780-\U0001F7FF]|[\U0001F800-\U0001F8FF]|[\U0001F900-\U0001F9FF]|[\U0001FA00-\U0001FA6F]|[\U0001FA70-\U0001FAFF]|[\U00002600-\U000026FF]|[\U00002700-\U000027BF]"
+        result = re.sub(emoji_pattern, "", text)
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
+
     def clean_whitespace(self, text: str) -> str:
         """Clean whitespace characters.
 
@@ -191,53 +238,6 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", text).strip()
         return result
 
-    def clean(self, text: str) -> str:
-        """Clean text using all cleaning methods.
-
-        Args:
-            text: Input text
-
-        Returns:
-            Cleaned text
-        """
-        if not text:
-            return text
-
-        # Apply cleaning steps in order
-        text = self.clean_whitespace(text)
-        text = self.clean_urls(text)
-        text = self.clean_mentions(text)
-        text = self.clean_hashtags(text)
-        text = self.clean_special_chars(text)
-        text = self.clean_numbers(text)
-        text = self.clean_punctuation(text)
-        text = self.clean_repeated_chars(text)
-        text = self.to_lowercase(text)
-        text = self.clean_extra_spaces(text)
-
-        return text
-
-    def normalize(self, text: str) -> str:
-        """Normalize text by cleaning it.
-
-        Args:
-            text: Input text
-
-        Returns:
-            Cleaned and normalized text
-        """
-        return self.clean(text)
-
-    def set_options(self, **kwargs):
-        """Set cleaning options.
-
-        Args:
-            **kwargs: Cleaning options to set
-        """
-        for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-
     def get_options(self) -> dict:
         """Get current cleaning options.
 
@@ -245,12 +245,16 @@ class TextCleaner:
             Dictionary of current options
         """
         return {
+            "remove_html": self.remove_html,
             "remove_urls": self.remove_urls,
             "remove_mentions": self.remove_mentions,
             "remove_hashtags": self.remove_hashtags,
             "remove_numbers": self.remove_numbers,
             "remove_punctuation": self.remove_punctuation,
+            "remove_emoji": self.remove_emoji,
             "lowercase": self.lowercase,
             "remove_extra_spaces": self.remove_extra_spaces,
             "remove_repeated_chars": self.remove_repeated_chars,
+            "remove_special_chars": self.remove_special_chars,
+            "remove_whitespace": self.remove_whitespace,
         }

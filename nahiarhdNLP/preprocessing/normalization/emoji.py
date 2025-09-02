@@ -3,7 +3,7 @@ Emoji normalizer for Indonesian text processing.
 """
 
 import re
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from nahiarhdNLP.datasets.loaders import DatasetLoader
 
@@ -99,106 +99,3 @@ class EmojiConverter:
             result = re.sub(pattern, emoji, result, flags=re.IGNORECASE)
 
         return result
-
-    def normalize(self, text: str) -> str:
-        """Normalize text by converting emoji to Indonesian text.
-
-        Args:
-            text: Input text
-
-        Returns:
-            Text with emojis converted to Indonesian words
-        """
-        return self.emoji_to_text_convert(text)
-
-    def get_emoji_info(self, emoji: str) -> Optional[Dict]:
-        """Get information about a specific emoji.
-
-        Args:
-            emoji: Emoji character
-
-        Returns:
-            Dictionary with emoji information or None if not found
-        """
-        for item in self.emoji_data:
-            if item.get("emoji") == emoji:
-                return item
-        return None
-
-    def search_emoji(self, query: str) -> List[Dict]:
-        """Search for emojis by name or alias.
-
-        Args:
-            query: Search query
-
-        Returns:
-            List of matching emoji data
-        """
-        results = []
-        query_lower = query.lower()
-
-        for item in self.emoji_data:
-            # Search in name_id
-            if query_lower in item.get("name_id", "").lower():
-                results.append(item)
-                continue
-
-            # Search in alias
-            if query_lower in item.get("alias", "").lower():
-                results.append(item)
-                continue
-
-            # Search in aliases list
-            aliases = item.get("aliases", [])
-            if isinstance(aliases, list):
-                for alias in aliases:
-                    if query_lower in alias.lower():
-                        results.append(item)
-                        break
-
-        return results
-
-    def get_emoji_count(self) -> int:
-        """Get number of emojis in dataset.
-
-        Returns:
-            Number of emojis
-        """
-        return len(self.emoji_data)
-
-    def get_categories(self) -> List[str]:
-        """Get list of emoji categories.
-
-        Returns:
-            List of categories
-        """
-        categories = set()
-        for item in self.emoji_data:
-            category = item.get("category", "")
-            if category:
-                categories.add(category)
-        return sorted(list(categories))
-
-    def get_emojis_by_category(self, category: str) -> List[Dict]:
-        """Get emojis by category.
-
-        Args:
-            category: Category name
-
-        Returns:
-            List of emoji data for the category
-        """
-        results = []
-        for item in self.emoji_data:
-            if item.get("category", "").lower() == category.lower():
-                results.append(item)
-        return results
-
-
-# Utilitas agar bisa diimport langsung
-_emoji_converter = EmojiConverter()
-_emoji_converter._load_data()
-
-
-def emoji_to_words(text: str) -> str:
-    return _emoji_converter.emoji_to_text_convert(text)
