@@ -182,25 +182,6 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_all(self, text: str) -> str:
-        """Apply all cleaning methods in sequence.
-
-        Args:
-            text: Input text
-
-        Returns:
-            Fully cleaned text
-        """
-        result = text
-        result = self.clean_urls(result)
-        result = self.clean_mentions(result)
-        result = self.clean_hashtags(result)
-        result = self.clean_html(result)
-        result = self.clean_emails(result)
-        result = self.clean_phones(result)
-        result = self.clean_currency(result)
-        return result
-
     def get_options(self) -> dict:
         """Get current cleaning options.
 
