@@ -15,6 +15,7 @@ from .tokenization.tokenizer import Tokenizer
 
 # Inisialisasi instance global untuk fungsi-fungsi utility (lazy loading)
 _text_cleaner = None
+_text_cleaner_word = None
 _stopword_remover = None
 _emoji_converter = None
 _spell_corrector = None
@@ -27,6 +28,13 @@ def _get_text_cleaner():
     if _text_cleaner is None:
         _text_cleaner = TextCleaner()
     return _text_cleaner
+
+
+def _get_text_cleaner_word():
+    global _text_cleaner_word
+    if _text_cleaner_word is None:
+        _text_cleaner_word = WordTextCleaner()
+    return _text_cleaner_word
 
 
 def _get_stopword_remover():
@@ -349,6 +357,146 @@ def to_lowercase(text: str) -> str:
     return _get_text_cleaner().to_lowercase(text)
 
 
+def enable_html_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan HTML pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa tag HTML
+
+    Example:
+        >>> from src.preprocessing import enable_html_cleaning
+        >>> enable_html_cleaning("Hello <b>world</b>")
+        "Hello world"
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_html_cleaning(text)
+
+
+def enable_url_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan URL pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa URL
+
+    Example:
+        >>> from src.preprocessing import enable_url_cleaning
+        >>> enable_url_cleaning("Kunjungi https://example.com")
+        "Kunjungi "
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_url_cleaning(text)
+
+
+def enable_mention_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan mention pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa mention
+
+    Example:
+        >>> from src.preprocessing import enable_mention_cleaning
+        >>> enable_mention_cleaning("Halo @user123 apa kabar?")
+        "Halo  apa kabar?"
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_mention_cleaning(text)
+
+
+def enable_hashtag_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan hashtag pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa hashtag
+
+    Example:
+        >>> from src.preprocessing import enable_hashtag_cleaning
+        >>> enable_hashtag_cleaning("Hari ini #senin #libur #weekend")
+        "Hari ini  "
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_hashtag_cleaning(text)
+
+
+def enable_email_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan email pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa email
+
+    Example:
+        >>> from src.preprocessing import enable_email_cleaning
+        >>> enable_email_cleaning("Kirim email ke test@example.com")
+        "Kirim email ke "
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_email_cleaning(text)
+
+
+def enable_phone_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan nomor telepon pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa nomor telepon
+
+    Example:
+        >>> from src.preprocessing import enable_phone_cleaning
+        >>> enable_phone_cleaning("Hubungi saya di 08123456789")
+        "Hubungi saya di "
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_phone_cleaning(text)
+
+
+def enable_currency_cleaning(text: str) -> str:
+    """Mengaktifkan pembersihan mata uang pada teks.
+
+    Args:
+        text: Teks yang akan dibersihkan
+
+    Returns:
+        Teks tanpa mata uang
+
+    Example:
+        >>> from src.preprocessing import enable_currency_cleaning
+        >>> enable_currency_cleaning("Harga barang adalah $100")
+        "Harga barang adalah "
+    """
+    if not text:
+        return text
+
+    return _get_text_cleaner_word().enable_currency_cleaning(text)
+
+
 def emoji_to_words(text: str) -> str:
     """Mengubah emoji menjadi kata-kata bahasa Indonesia.
 
@@ -486,6 +634,13 @@ class Pipeline:
             "remove_stopwords": globals().get("remove_stopwords"),
             "stem_text": globals().get("stem_text"),
             "tokenize": globals().get("tokenize"),
+            "enable_html_cleaning": globals().get("enable_html_cleaning"),
+            "enable_url_cleaning": globals().get("enable_url_cleaning"),
+            "enable_mention_cleaning": globals().get("enable_mention_cleaning"),
+            "enable_hashtag_cleaning": globals().get("enable_hashtag_cleaning"),
+            "enable_email_cleaning": globals().get("enable_email_cleaning"),
+            "enable_phone_cleaning": globals().get("enable_phone_cleaning"),
+            "enable_currency_cleaning": globals().get("enable_currency_cleaning"),
         }
 
         # Build functions berdasarkan config
@@ -604,6 +759,13 @@ def preprocess(
     remove_stopwords: bool = False,
     stem_text: bool = False,
     tokenize: bool = False,
+    enable_html_cleaning: bool = False,
+    enable_url_cleaning: bool = False,
+    enable_mention_cleaning: bool = False,
+    enable_hashtag_cleaning: bool = False,
+    enable_email_cleaning: bool = False,
+    enable_phone_cleaning: bool = False,
+    enable_currency_cleaning: bool = False,
 ) -> Union[str, List[str]]:
     """
     Fungsi preprocess dengan parameter eksplisit untuk setiap step.
@@ -684,6 +846,20 @@ def preprocess(
         functions.append(globals()["stem_text"])
     if tokenize:
         functions.append(globals()["tokenize"])
+    if enable_html_cleaning:
+        functions.append(globals()["enable_html_cleaning"])
+    if enable_url_cleaning:
+        functions.append(globals()["enable_url_cleaning"])
+    if enable_mention_cleaning:
+        functions.append(globals()["enable_mention_cleaning"])
+    if enable_hashtag_cleaning:
+        functions.append(globals()["enable_hashtag_cleaning"])
+    if enable_email_cleaning:
+        functions.append(globals()["enable_email_cleaning"])
+    if enable_phone_cleaning:
+        functions.append(globals()["enable_phone_cleaning"])
+    if enable_currency_cleaning:
+        functions.append(globals()["enable_currency_cleaning"])
 
     # Gunakan Pipeline baru untuk proses
     if functions:
@@ -691,184 +867,3 @@ def preprocess(
         return pipe.process(text)
     else:
         return text
-
-
-# Word-preserving text cleaning functions
-
-_word_text_cleaner = None
-
-
-def _get_word_text_cleaner():
-    global _word_text_cleaner
-    if _word_text_cleaner is None:
-        _word_text_cleaner = WordTextCleaner()
-    return _word_text_cleaner
-
-
-def clean_urls_preserve_domain(text: str) -> str:
-    """Remove URL protocols but keep domains.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Text with URL protocols removed but domains preserved
-
-    Example:
-        >>> clean_urls_preserve_domain("Visit http://example.com")
-        'Visit example.com'
-    """
-    cleaner = _get_word_text_cleaner()
-    return cleaner.clean_urls(text, force=True)
-
-
-def clean_mentions_preserve_username(text: str) -> str:
-    """Remove @ symbols but keep usernames.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Text with @ symbols removed but usernames preserved
-
-    Example:
-        >>> clean_mentions_preserve_username("Hello @user")
-        'Hello user'
-    """
-    cleaner = _get_word_text_cleaner()
-    return cleaner.clean_mentions(text, force=True)
-
-
-def clean_hashtags_preserve_tags(text: str) -> str:
-    """Remove # symbols but keep tag text.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Text with # symbols removed but tag text preserved
-
-    Example:
-        >>> clean_hashtags_preserve_tags("I love #cars")
-        'I love cars'
-    """
-    cleaner = _get_word_text_cleaner()
-    return cleaner.clean_hashtags(text, force=True)
-
-
-def clean_html_preserve_content(text: str) -> str:
-    """Remove HTML tags but keep content.
-
-    Args:
-        text: Input text
-
-    Returns:
-        Text with HTML tags removed but content preserved
-
-    Example:
-        >>> clean_html_preserve_content("<p>Hello <b>world</b>!</p>")
-        'Hello world!'
-    """
-    cleaner = _get_word_text_cleaner()
-    return cleaner.clean_html(text, force=True)
-
-
-def clean_all_preserve_words(
-    text: str,
-    clean_urls: bool = True,
-    clean_mentions: bool = True,
-    clean_hashtags: bool = True,
-    clean_html: bool = True,
-    clean_emails: bool = False,
-    clean_phones: bool = False,
-    clean_currency: bool = False,
-) -> str:
-    """Clean text while preserving meaningful words.
-
-    Args:
-        text: Input text
-        clean_urls: Remove URL protocols but keep domains
-        clean_mentions: Remove @ but keep usernames
-        clean_hashtags: Remove # but keep tag text
-        clean_html: Remove HTML tags but keep content
-        clean_emails: Process email addresses
-        clean_phones: Process phone numbers
-        clean_currency: Process currency symbols
-
-    Returns:
-        Cleaned text with meaningful words preserved
-
-    Example:
-        >>> clean_all_preserve_words("Hello @user! Check #cars at http://example.com")
-        'Hello user! Check cars at example.com'
-    """
-    cleaner = WordTextCleaner(
-        remove_urls=clean_urls,
-        remove_mentions=clean_mentions,
-        remove_hashtags=clean_hashtags,
-        remove_html=clean_html,
-        clean_emails=clean_emails,
-        clean_phones=clean_phones,
-        clean_currency=clean_currency,
-    )
-    return cleaner.clean_all(text)
-
-
-def clean_emails_preserve_text(text: str) -> str:
-    """Clean email addresses while preserving the text content.
-
-    Args:
-        text: Input text containing emails
-
-    Returns:
-        Text with email addresses cleaned but text preserved
-
-    Example:
-        >>> clean_emails_preserve_text("Contact me at john.doe@gmail.com")
-        'Contact me at john doe gmail com'
-    """
-    if not text:
-        return text
-
-    cleaner = WordTextCleaner(clean_emails=True)
-    return cleaner.clean_emails(text)
-
-
-def clean_phones_preserve_numbers(text: str) -> str:
-    """Clean phone numbers while preserving the numbers.
-
-    Args:
-        text: Input text containing phone numbers
-
-    Returns:
-        Text with phone numbers cleaned but numbers preserved
-
-    Example:
-        >>> clean_phones_preserve_numbers("Call me at (555) 123-4567")
-        'Call me at 5551234567'
-    """
-    if not text:
-        return text
-
-    cleaner = WordTextCleaner(clean_phones=True)
-    return cleaner.clean_phones(text)
-
-
-def clean_currency_preserve_numbers(text: str) -> str:
-    """Clean currency symbols while preserving the numbers.
-
-    Args:
-        text: Input text containing currency
-
-    Returns:
-        Text with currency symbols removed but numbers preserved
-
-    Example:
-        >>> clean_currency_preserve_numbers("The price is $100.50")
-        'The price is 100.50'
-    """
-    if not text:
-        return text
-
-    cleaner = WordTextCleaner(clean_currency=True)
-    return cleaner.clean_currency(text)
