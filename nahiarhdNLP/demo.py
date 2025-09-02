@@ -11,9 +11,6 @@ from nahiarhdNLP.preprocessing import (
     StopwordRemover,
     TextCleaner,
     Tokenizer,
-    clean_currency_preserve_numbers,
-    clean_emails_preserve_text,
-    clean_phones_preserve_numbers,
     emoji_to_words,
     pipeline,
     preprocess,
@@ -60,21 +57,6 @@ def demo_functions(console):
         ("remove_stopwords", "siapa yang suruh makan?!!", remove_stopwords),
         ("emoji_to_words", "emoji 😀😁", emoji_to_words),
         ("words_to_emoji", "emoji wajah_gembira", words_to_emoji),
-        (
-            "clean_emails_preserve_text",
-            "Contact me at john.doe@gmail.com",
-            clean_emails_preserve_text,
-        ),
-        (
-            "clean_phones_preserve_numbers",
-            "Call me at (555) 123-4567",
-            clean_phones_preserve_numbers,
-        ),
-        (
-            "clean_currency_preserve_numbers",
-            "The price is $100.50 and €75.25",
-            clean_currency_preserve_numbers,
-        ),
         (
             "correct_sentence",
             "sya suka mkn nasi",

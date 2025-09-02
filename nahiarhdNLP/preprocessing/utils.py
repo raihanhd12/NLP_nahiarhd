@@ -6,7 +6,7 @@ from typing import List, Union
 
 # Import kelas-kelas yang sudah ada
 from .cleaning.text_cleaner import TextCleaner
-from .cleaning.text_cleaner_word import TextCleaner as WordTextCleaner
+from .cleaning.text_cleaner_word import TextCleanerWord as WordTextCleaner
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
 from .normalization.emoji import EmojiConverter
@@ -454,7 +454,9 @@ def enable_email_cleaning(text: str) -> str:
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_email_cleaning(text)
+    # Create TextCleanerWord with email cleaning enabled
+    cleaner = WordTextCleaner(enable_email_cleaning=True)
+    return cleaner.clean_emails(text, keep_text=False)
 
 
 def enable_phone_cleaning(text: str) -> str:
@@ -474,7 +476,9 @@ def enable_phone_cleaning(text: str) -> str:
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_phone_cleaning(text)
+    # Create TextCleanerWord with phone cleaning enabled
+    cleaner = WordTextCleaner(enable_phone_cleaning=True)
+    return cleaner.clean_phones(text, keep_numbers=False)
 
 
 def enable_currency_cleaning(text: str) -> str:
@@ -494,7 +498,9 @@ def enable_currency_cleaning(text: str) -> str:
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_currency_cleaning(text)
+    # Create TextCleanerWord with currency cleaning enabled
+    cleaner = WordTextCleaner(enable_currency_cleaning=True)
+    return cleaner.clean_currency(text, keep_numbers=False)
 
 
 def emoji_to_words(text: str) -> str:

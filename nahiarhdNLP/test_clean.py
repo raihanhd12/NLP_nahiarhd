@@ -2,12 +2,19 @@
 Test script for TextCleaner from text_cleaner_word.py
 """
 
-from nahiarhdNLP.preprocessing.cleaning.text_cleaner_word import TextCleaner
+from nahiarhdNLP.preprocessing.cleaning.text_cleaner_word import TextCleanerWord
 
 
 def test_text_cleaner():
     # Create TextCleaner instance with default options
-    cleaner = TextCleaner()
+    cleaner = TextCleanerWord()
+
+    # Create TextCleaner instance with email, phone, currency cleaning enabled
+    cleaner_extended = TextCleanerWord(
+        enable_email_cleaning=True,
+        enable_phone_cleaning=True,
+        enable_currency_cleaning=True,
+    )
 
     # Sample texts for testing
     test_cases = {
@@ -15,6 +22,9 @@ def test_text_cleaner():
         "mentions": "Hello @user1 and @user2, how are you?",
         "hashtags": "I love #cars and #bikes",
         "html": "<p>Hello <b>world</b>!</p>",
+        "emails": "Contact me at john.doe@gmail.com or support@company.com",
+        "phones": "Call me at 08123456789 or (021) 123-4567",
+        "currency": "The price is $100.50 and €75.25 or Rp 50.000",
         "mixed": "Hello @user! Check #cars at http://example.com",
     }
 
@@ -43,32 +53,25 @@ def test_text_cleaner():
     print(f"Output: '{cleaner.clean_html(test_cases['html'])}'")
     print("-" * 40)
 
-    # Test clean_all method
-    print("\n=== clean_all() Method Test ===")
-    mixed_input = test_cases["mixed"]
-    print(f"Original: '{mixed_input}'")
-    all_cleaned = cleaner.clean_all(mixed_input)
-    print(f"clean_all(): '{all_cleaned}'")
+    # Test extended methods (email, phone, currency)
+    print("\n=== Extended Cleaning Methods ===")
+    print("Current extended options:", cleaner_extended.get_options())
     print("-" * 40)
 
-    # Test mixed case (step by step)
-    print("\n=== Mixed Test Case (Step by Step) ===")
-    mixed_input = test_cases["mixed"]
-    print(f"Original: '{mixed_input}'")
+    print("Method: clean_emails")
+    print(f"Input:  '{test_cases['emails']}'")
+    print(f"Output: '{cleaner_extended.clean_emails(test_cases['emails'])}'")
+    print("-" * 40)
 
-    # Apply cleaning methods in sequence
-    result = mixed_input
-    result = cleaner.clean_urls(result)
-    print(f"After clean_urls: '{result}'")
-    result = cleaner.clean_mentions(result)
-    print(f"After clean_mentions: '{result}'")
-    result = cleaner.clean_hashtags(result)
-    print(f"After clean_hashtags: '{result}'")
-    result = cleaner.clean_html(result)
-    print(f"After clean_html: '{result}'")
+    print("Method: clean_phones")
+    print(f"Input:  '{test_cases['phones']}'")
+    print(f"Output: '{cleaner_extended.clean_phones(test_cases['phones'])}'")
+    print("-" * 40)
 
-    print("\n=== Final Result ===")
-    print(f"'{result}'")
+    print("Method: clean_currency")
+    print(f"Input:  '{test_cases['currency']}'")
+    print(f"Output: '{cleaner_extended.clean_currency(test_cases['currency'])}'")
+    print("-" * 40)
 
 
 if __name__ == "__main__":

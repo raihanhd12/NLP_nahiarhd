@@ -23,17 +23,17 @@ from nahiarhdNLP.preprocessing import (
     emoji_to_words, words_to_emoji,
     # Fungsi linguistic
     remove_stopwords, stem_text, tokenize,
-    # Fungsi word-preserving cleaning (BARU!)
-    clean_emails_preserve_text, clean_phones_preserve_numbers, clean_currency_preserve_numbers,
-    clean_urls_preserve_domain, clean_mentions_preserve_username, clean_hashtags_preserve_tags,
-    clean_html_preserve_content, clean_all_preserve_words,
+    # Fungsi word-preserving cleaning
+    enable_html_cleaning, enable_url_cleaning, enable_mention_cleaning,
+    enable_hashtag_cleaning, enable_email_cleaning, enable_phone_cleaning,
+    enable_currency_cleaning,
     # Fungsi pipeline
     pipeline, preprocess, Pipeline
 )
 
 # Import kelas untuk penggunaan advanced
 from nahiarhdNLP.preprocessing import (
-    TextCleaner, SpellCorrector, StopwordRemover,
+    TextCleaner, TextCleanerWord, SpellCorrector, StopwordRemover,
     Stemmer, EmojiConverter, Tokenizer
 )
 
@@ -50,111 +50,121 @@ from nahiarhdNLP.preprocessing import TextCleaner
 
 cleaner = TextCleaner()
 
-# Membersihkan HTML tags
+# Hapus HTML tags
 html_text = "website <a href='https://google.com'>google</a>"
 clean_result = cleaner.clean_html(html_text)
 print(clean_result)
 # Output: "website google"
 
-# Membersihkan URL
-url_text = "kunjungi https://google.com sekarang!"
-clean_result = cleaner.clean_urls(url_text)
-print(clean_result)
-# Output: "kunjungi sekarang!"
-
-# Membersihkan mentions
-mention_text = "Halo @user123 apa kabar?"
-clean_result = cleaner.clean_mentions(mention_text)
-print(clean_result)
-# Output: "Halo apa kabar?"
-
-# Membersihkan emoji
+# Hapus emoji
 emoji_text = "Halo dunia 😀😁 apa kabar? 🎉"
 clean_result = cleaner.clean_emoji(emoji_text)
 print(clean_result)
-# Output: "Halo dunia apa kabar?"
-```
+# Output: "Halo dunia   apa kabar?  "
 
-### 1.5. 🛡️ Word-Preserving TextCleaner - Membersihkan Teks dengan Mempertahankan Konten (BARU!)
-
-```python
-from nahiarhdNLP.preprocessing import TextCleaner
-
-# Buat TextCleaner dengan opsi word-preserving
-cleaner = TextCleaner(
-    remove_urls=True,
-    remove_mentions=True,
-    remove_hashtags=True,
-    clean_emails=True,      # BARU!
-    clean_phones=True,      # BARU!
-    clean_currency=True     # BARU!
-)
-
-# Membersihkan URL tapi tetap mempertahankan domain
+# Hapus URL
 url_text = "kunjungi https://google.com sekarang!"
 clean_result = cleaner.clean_urls(url_text)
 print(clean_result)
-# Output: "kunjungi google sekarang!"
+# Output: "kunjungi  sekarang!"
 
-# Membersihkan mentions tapi tetap mempertahankan username
+# Hapus mentions
 mention_text = "Halo @user123 apa kabar?"
 clean_result = cleaner.clean_mentions(mention_text)
 print(clean_result)
-# Output: "Halo user123 apa kabar?"
+# Output: "Halo  apa kabar?"
 
-# Membersihkan hashtags tapi tetap mempertahankan tag
+# Hapus Hashtags
 hashtag_text = "Hari ini #senin #libur #weekend"
 clean_result = cleaner.clean_hashtags(hashtag_text)
 print(clean_result)
+# Output: "Hari ini  "
+
+# Hapus Angka
+number_text = "Saya berumur 25 tahun dan punya 3 anak"
+clean_result = cleaner.clean_numbers(number_text)
+print(clean_result)
+# Output: "Saya berumur  tahun dan punya  anak"
+
+# Hapus Tanda Baca
+punct_text = "Halo, apa kabar?! Semoga sehat selalu..."
+clean_result = cleaner.clean_punctuation(punct_text)
+print(clean_result)
+# Output: "Halo apa kabar Semoga sehat selalu"
+
+# Hapus ekstra spasi
+space_text = "Halo    dunia   yang    indah"
+clean_result = cleaner.clean_extra_spaces(space_text)
+print(clean_result)
+# Output: "Halo dunia yang indah"
+
+# Hapus karakter khusus
+special_text = "Halo @#$%^&*() dunia!!!"
+clean_result = cleaner.clean_special_chars(special_text)
+print(clean_result)
+# Output: "Halo  dunia"
+
+# Hapus spasi
+whitespace_text = "Halo\n\tdunia\r\nyang indah"
+clean_result = cleaner.clean_whitespace(whitespace_text)
+print(clean_result)
+# Output: "Halo dunia yang indah"
+
+# Ubah ke huruf kecil
+upper_text = "HALO Dunia Yang INDAH"
+clean_result = cleaner.to_lowercase(upper_text)
+print(clean_result)
+# Output: "halo dunia yang indah"
+```
+
+### 1.1. ✨ Enable Functions - Pembersihan dengan Mempertahankan Konten
+
+```python
+from nahiarhdNLP.preprocessing import TextCleanerWord
+
+cleaner = TextCleanerWord()
+
+# Membersihkan HTML tags
+html_text = "Hello <b>world</b>"
+clean_result = enable_html_cleaning(html_text)
+print(clean_result)
+# Output: "Hello world"
+
+# Membersihkan URL
+url_text = "Kunjungi https://example.com"
+clean_result = enable_url_cleaning(url_text)
+print(clean_result)
+# Output: "Kunjungi example.com"
+
+# Membersihkan mentions
+mention_text = "Halo @user123 apa kabar?"
+clean_result = enable_mention_cleaning(mention_text)
+print(clean_result)
+# Output: "Halo user123 apa kabar?"
+
+# Membersihkan hashtags
+hashtag_text = "Hari ini #senin #libur #weekend"
+clean_result = enable_hashtag_cleaning(hashtag_text)
+print(clean_result)
 # Output: "Hari ini senin libur weekend"
 
-# 🆕 BARU: Membersihkan email tapi tetap mempertahankan teks
-email_text = "Contact me at john.doe@gmail.com"
-clean_result = cleaner.clean_emails(email_text)
+# Membersihkan email
+email_text = "Kirim email ke test@example.com"
+clean_result = enable_email_cleaning(email_text)
 print(clean_result)
-# Output: "Contact me at john doe gmail com"
+# Output: "Kirim email ke test example com"
 
-# 🆕 BARU: Membersihkan nomor telepon tapi tetap mempertahankan angka
-phone_text = "Call me at (555) 123-4567"
-clean_result = cleaner.clean_phones(phone_text)
+# Membersihkan nomor telepon
+phone_text = "Hubungi saya di 08123456789"
+clean_result = enable_phone_cleaning(phone_text)
 print(clean_result)
-# Output: "Call me at 5551234567"
+# Output: "Hubungi saya di 08123456789"
 
-# 🆕 BARU: Membersihkan simbol mata uang tapi tetap mempertahankan angka
-currency_text = "The price is $100.50 and €75.25"
-clean_result = cleaner.clean_currency(currency_text)
+# Membersihkan mata uang
+currency_text = "Harga barang adalah $100"
+clean_result = enable_currency_cleaning(currency_text)
 print(clean_result)
-# Output: "The price is 100.50 and 75.25"
-
-# Atau gunakan fungsi individual untuk kemudahan
-from nahiarhdNLP.preprocessing import (
-    clean_emails_preserve_text,
-    clean_phones_preserve_numbers,
-    clean_currency_preserve_numbers
-)
-
-# Fungsi individual untuk email
-email_result = clean_emails_preserve_text("Contact john.doe@gmail.com")
-print(email_result)
-# Output: "Contact john doe gmail com"
-
-# Fungsi individual untuk telepon
-phone_result = clean_phones_preserve_numbers("Call (555) 123-4567")
-print(phone_result)
-# Output: "Call 5551234567"
-
-# Fungsi individual untuk mata uang
-currency_result = clean_currency_preserve_numbers("Price: $99.99")
-print(currency_result)
-# Output: "Price: 99.99"
-
-# Clean semua sekaligus dengan mempertahankan konten
-from nahiarhdNLP.preprocessing import clean_all_preserve_words
-
-mixed_text = "Hello @user! Check #cars at https://google.com, contact john@gmail.com, call (555)123-4567, price $100"
-result = clean_all_preserve_words(mixed_text, clean_emails=True, clean_phones=True, clean_currency=True)
-print(result)
-# Output: "Hello user! Check cars at google, contact john gmail com, call 5551234567, price 100"
+# Output: "Harga barang adalah 100"
 ```
 
 ### 2. ✏️ SpellCorrector - Koreksi Ejaan & Normalisasi Slang
@@ -252,151 +262,7 @@ except ImportError:
     print("Install Sastrawi dengan: pip install Sastrawi")
 ```
 
-### 7. 🛠️ Fungsi Individual
-
-```python
-from nahiarhdNLP.preprocessing import (
-    remove_html, remove_emoji, remove_url, remove_mentions, remove_hashtags,
-    remove_numbers, remove_punctuation, remove_extra_spaces,
-    remove_special_chars, remove_whitespace, to_lowercase,
-    replace_spell_corrector, replace_repeated_chars,
-    emoji_to_words, words_to_emoji, remove_stopwords,
-    stem_text, tokenize,
-    # 🆕 BARU: Word-preserving cleaning functions
-    clean_emails_preserve_text, clean_phones_preserve_numbers, clean_currency_preserve_numbers,
-    clean_urls_preserve_domain, clean_mentions_preserve_username, clean_hashtags_preserve_tags,
-    clean_html_preserve_content, clean_all_preserve_words
-)
-
-# 🧹 FUNGSI PEMBERSIHAN DASAR
-
-# Menghapus HTML tags
-html_text = "website <a href='https://google.com'>google</a>"
-clean_result = remove_html(html_text)
-print(clean_result)
-# Output: "website google"
-
-# Menghapus emoji
-emoji_text = "Halo dunia 😀😁 apa kabar? 🎉"
-clean_result = remove_emoji(emoji_text)
-print(clean_result)
-# Output: "Halo dunia apa kabar?"
-
-# Menghapus URL
-url_text = "kunjungi https://google.com sekarang!"
-clean_result = remove_url(url_text)
-print(clean_result)
-# Output: "kunjungi sekarang!"
-
-# Menghapus mentions (@username)
-mention_text = "Halo @user123 dan @admin apa kabar?"
-clean_result = remove_mentions(mention_text)
-print(clean_result)
-# Output: "Halo dan apa kabar?"
-
-# Menghapus hashtags (#tag)
-hashtag_text = "Hari ini #senin #libur #weekend"
-clean_result = remove_hashtags(hashtag_text)
-print(clean_result)
-# Output: "Hari ini"
-
-# ✨ FUNGSI NORMALISASI DAN KOREKSI
-
-# Normalisasi slang dan koreksi ejaan
-slang_text = "emg siapa yg nanya?"
-normal_text = replace_spell_corrector(slang_text)
-print(normal_text)
-# Output: "memang siapa yang bertanya?"
-
-# Mengatasi perpanjangan kata (word elongation)
-elongation_text = "kenapaaa???"
-clean_result = replace_repeated_chars(elongation_text)
-print(clean_result)
-# Output: "kenapaa??"
-
-# 😀 FUNGSI EMOJI
-
-# Konversi emoji ke kata
-emoji_text = "emoji 😀😁"
-text_result = emoji_to_words(emoji_text)
-print(text_result)
-# Output: "emoji wajah_gembira wajah_gembira_dengan_mata_bahagia"
-
-# Konversi kata ke emoji
-text_to_emoji = "emoji wajah_gembira"
-emoji_result = words_to_emoji(text_to_emoji)
-print(emoji_result)
-# Output: "emoji 😀"
-
-# 🆕 BARU: WORD-PRESERVING CLEANING FUNCTIONS
-
-# Membersihkan URL tapi tetap mempertahankan domain
-url_text = "kunjungi https://google.com sekarang!"
-clean_result = clean_urls_preserve_domain(url_text)
-print(clean_result)
-# Output: "kunjungi google sekarang!"
-
-# Membersihkan mentions tapi tetap mempertahankan username
-mention_text = "Halo @user123 apa kabar?"
-clean_result = clean_mentions_preserve_username(mention_text)
-print(clean_result)
-# Output: "Halo user123 apa kabar?"
-
-# Membersihkan hashtags tapi tetap mempertahankan tag
-hashtag_text = "Hari ini #senin #libur #weekend"
-clean_result = clean_hashtags_preserve_tags(hashtag_text)
-print(clean_result)
-# Output: "Hari ini senin libur weekend"
-
-# Membersihkan HTML tapi tetap mempertahankan konten
-html_text = "website <a href='https://google.com'>google</a>"
-clean_result = clean_html_preserve_content(html_text)
-print(clean_result)
-# Output: "website google"
-
-# 🆕 Membersihkan email tapi tetap mempertahankan teks
-email_text = "Contact me at john.doe@gmail.com"
-clean_result = clean_emails_preserve_text(email_text)
-print(clean_result)
-# Output: "Contact me at john doe gmail com"
-
-# 🆕 Membersihkan nomor telepon tapi tetap mempertahankan angka
-phone_text = "Call me at (555) 123-4567"
-clean_result = clean_phones_preserve_numbers(phone_text)
-print(clean_result)
-# Output: "Call me at 5551234567"
-
-# 🆕 Membersihkan simbol mata uang tapi tetap mempertahankan angka
-currency_text = "The price is $100.50 and €75.25"
-clean_result = clean_currency_preserve_numbers(currency_text)
-print(clean_result)
-# Output: "The price is 100.50 and 75.25"
-
-# 🔬 FUNGSI LINGUISTIC
-
-# Menghapus stopwords
-stopword_text = "siapa yang suruh makan?!!"
-clean_result = remove_stopwords(stopword_text)
-print(clean_result)
-# Output: "suruh makan?!!"
-
-# Stemming teks (memerlukan Sastrawi)
-try:
-    stem_text_input = "bermain-main dengan senang"
-    stemmed = stem_text(stem_text_input)
-    print(stemmed)
-    # Output: "main main dengan senang"
-except ImportError:
-    print("Install Sastrawi: pip install Sastrawi")
-
-# Tokenisasi teks
-tokenize_text = "Saya suka makan nasi"
-tokens = tokenize(tokenize_text)
-print(tokens)
-# Output: ['Saya', 'suka', 'makan', 'nasi']
-```
-
-### 8. 🔀 Pipeline - Preprocessing Sekaligus
+### 7. 🔀 Pipeline - Preprocessing Sekaligus
 
 Pipeline mendukung **dua cara penggunaan**:
 
@@ -512,9 +378,14 @@ emoji_to_words, words_to_emoji
 
 # Linguistic processing
 remove_stopwords, stem_text, tokenize
+
+# Word-preserving cleaning
+enable_html_cleaning, enable_url_cleaning, enable_mention_cleaning,
+enable_hashtag_cleaning, enable_email_cleaning, enable_phone_cleaning,
+enable_currency_cleaning
 ```
 
-### 9. 🎛️ Preprocess Function (Backward Compatibility)
+### 8. 🎛️ Preprocess Function (Backward Compatibility)
 
 ```python
 from nahiarhdNLP.preprocessing import preprocess
@@ -534,7 +405,7 @@ print(result)
 # Output: "haloo !! 123"
 ```
 
-### 10. 📊 Dataset Loader
+### 9. 📊 Dataset Loader
 
 ```python
 from nahiarhdNLP.datasets import DatasetLoader
@@ -640,7 +511,7 @@ nahiarhdNLP/
 ├── preprocessing/
 │   ├── cleaning/
 │   │   ├── text_cleaner.py     # TextCleaner class (complete removal)
-│   │   └── text_cleaner_word.py # Word-preserving TextCleaner class (BARU!)
+│   │   └── text_cleaner_word.py # Word-preserving TextCleaner class
 │   ├── linguistic/
 │   │   ├── stemmer.py      # Stemmer class
 │   │   └── stopwords.py    # StopwordRemover class
@@ -680,13 +551,14 @@ nahiarhdNLP/
 
 ## 🆕 Changelog Versi 1.6.0 (Latest)
 
-- 🚀 **[FITUR BARU]** Word-Preserving Text Cleaning System
-- ✅ **[BARU]** `TextCleaner` class dengan opsi word-preserving untuk mempertahankan konten berharga
-- ✅ **[BARU]** Method `clean_emails()` - Membersihkan email tapi tetap mempertahankan teks (`john.doe@gmail.com` → `john doe gmail com`)
-- ✅ **[BARU]** Method `clean_phones()` - Membersihkan nomor telepon tapi tetap mempertahankan angka ((555)123-4567 → 5551234567)
-- ✅ **[BARU]** Method `clean_currency()` - Membersihkan simbol mata uang tapi tetap mempertahankan angka ($100.50 → 100.50)
-- ✅ **[BARU]** Fungsi utility individual: `clean_emails_preserve_text()`, `clean_phones_preserve_numbers()`, `clean_currency_preserve_numbers()`
-- ✅ **[BARU]** Fungsi `clean_all_preserve_words()` untuk cleaning komprehensif dengan mempertahankan konten
+- 🚀 **[FITUR BARU]** Enable Functions untuk pembersihan dengan mempertahankan konten
+- ✅ **[BARU]** `enable_html_cleaning()` - Membersihkan HTML tags
+- ✅ **[BARU]** `enable_url_cleaning()` - Membersihkan URL
+- ✅ **[BARU]** `enable_mention_cleaning()` - Membersihkan mentions (@user)
+- ✅ **[BARU]** `enable_hashtag_cleaning()` - Membersihkan hashtags (#tag)
+- ✅ **[BARU]** `enable_email_cleaning()` - Membersihkan email
+- ✅ **[BARU]** `enable_phone_cleaning()` - Membersihkan nomor telepon
+- ✅ **[BARU]** `enable_currency_cleaning()` - Membersihkan mata uang
 - ✅ **[BARU]** Demo script diperbarui dengan contoh lengkap untuk semua fitur baru
 - ✅ **[BARU]** Dokumentasi README lengkap dengan contoh penggunaan fitur baru
 - ✅ **[PERBAIKAN]** Integrasi penuh dengan sistem Pipeline dan preprocess functions

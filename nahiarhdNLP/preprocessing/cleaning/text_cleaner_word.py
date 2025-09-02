@@ -5,7 +5,7 @@ Text cleaner for Indonesian text processing.
 import re
 
 
-class TextCleaner:
+class TextCleanerWord:
     """Clean and normalize Indonesian text."""
 
     def __init__(self, language: str = "indonesian", **kwargs):
@@ -115,7 +115,8 @@ class TextCleaner:
 
         if keep_text:
             # Remove @ and . from emails but keep the text parts
-            email_pattern = r"(\w+)@(\w+)\.(\w+)"
+            # More comprehensive pattern to handle various email formats
+            email_pattern = r"([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})"
             result = re.sub(email_pattern, r"\1 \2 \3", text)
         else:
             # Remove entire email
@@ -125,35 +126,48 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def clean_phones(self, text: str, keep_numbers: bool = True) -> str:
+    def clean_phones(
+        self, text: str, keep_numbers: bool = True, force: bool = False
+    ) -> str:
         """Extract or remove phone numbers from text.
 
         Args:
             text: Input text
             keep_numbers: If True, remove formatting but keep numbers
                          If False, remove entire phone number
+            force: Force cleaning even if enable_phone_cleaning is False
 
         Returns:
             Text with phone numbers processed
         """
-        if not self.enable_phone_cleaning:
+        if not self.enable_phone_cleaning and not force:
             return text
 
+        result = text
         if keep_numbers:
-            # Remove phone formatting but keep numbers
-            phone_pattern = r"[\+\-\(\)\s]"
-            # Only apply to sequences that look like phone numbers
-            phone_sequences = re.findall(r"[\+]?[\d\-\(\)\s]{8,}", text)
-            for phone in phone_sequences:
-                cleaned_phone = re.sub(phone_pattern, "", phone)
-                if cleaned_phone.isdigit():
-                    text = text.replace(phone, cleaned_phone)
+            # Remove phone formatting but keep numbers using regex substitution
+            # Pattern to match phone numbers with formatting (more precise)
+            phone_pattern = r"(\+62|62|0)([\d\-\(\)]{8,})(?=\s|$)|(\([\d]{3,4}\)\s?[\d\-\(\)]{6,})(?=\s|$)|([\+\d][\d\-\(\)]{8,})(?=\s|$)"
+
+            def clean_phone_match(match):
+                if match.group(1):  # Indonesian format (+62/62/0)
+                    prefix = match.group(1)
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(2))
+                    return prefix + numbers
+                elif match.group(3):  # Parenthetical format like (021) 123-4567
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(3))
+                    return numbers
+                else:  # International format
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(4))
+                    return numbers
+
+            result = re.sub(phone_pattern, clean_phone_match, text)
         else:
             # Remove entire phone numbers
             phone_pattern = r"[\+]?[\d\-\(\)\s]{8,}\d"
             result = re.sub(phone_pattern, "", text)
 
-        result = re.sub(r"\s+", " ", text).strip()
+        result = re.sub(r"\s+", " ", result).strip()
         return result
 
     def clean_currency(self, text: str, keep_numbers: bool = True) -> str:
@@ -190,10 +204,10 @@ class TextCleaner:
         """
         return {
             "enable_html_cleaning": self.enable_html_cleaning,
-            "enable_urls_cleaning": self.enable_urls_cleaning,
-            "enable_mentions_cleaning": self.enable_mentions_cleaning,
-            "enable_hashtags_cleaning": self.enable_hashtags_cleaning,
-            "enable_emails_cleaning": self.enable_emails_cleaning,
-            "enable_phones_cleaning": self.enable_phones_cleaning,
+            "enable_url_cleaning": self.enable_url_cleaning,
+            "enable_mention_cleaning": self.enable_mention_cleaning,
+            "enable_hashtag_cleaning": self.enable_hashtag_cleaning,
+            "enable_email_cleaning": self.enable_email_cleaning,
+            "enable_phone_cleaning": self.enable_phone_cleaning,
             "enable_currency_cleaning": self.enable_currency_cleaning,
         }

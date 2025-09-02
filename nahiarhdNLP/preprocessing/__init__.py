@@ -7,6 +7,7 @@ including cleaning, normalization, tokenization, and linguistic processing.
 
 # Import all classes for advanced usage
 from .cleaning.text_cleaner import TextCleaner
+from .cleaning.text_cleaner_word import TextCleanerWord as WordTextCleaner
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
 from .normalization.emoji import EmojiConverter
@@ -18,12 +19,12 @@ from .utils import (  # Basic cleaning functions; Normalization and correction f
     Pipeline,
     emoji_to_words,
     enable_currency_cleaning,
-    enable_emails_cleaning,
-    enable_hashtags_cleaning,
+    enable_email_cleaning,
+    enable_hashtag_cleaning,
     enable_html_cleaning,
-    enable_mentions_cleaning,
-    enable_phones_cleaning,
-    enable_urls_cleaning,
+    enable_mention_cleaning,
+    enable_phone_cleaning,
+    enable_url_cleaning,
     pipeline,
     preprocess,
     remove_emoji,
@@ -72,6 +73,7 @@ __all__ = [
     "preprocess",
     # Classes
     "TextCleaner",
+    "WordTextCleaner",
     "Stemmer",
     "StopwordRemover",
     "EmojiConverter",
@@ -79,10 +81,10 @@ __all__ = [
     "Tokenizer",
     # Word-preserving cleaning functions
     "enable_html_cleaning",
-    "enable_urls_cleaning",
-    "enable_mentions_cleaning",
-    "enable_hashtags_cleaning",
-    "enable_emails_cleaning",
-    "enable_phones_cleaning",
+    "enable_url_cleaning",
+    "enable_mention_cleaning",
+    "enable_hashtag_cleaning",
+    "enable_email_cleaning",
+    "enable_phone_cleaning",
     "enable_currency_cleaning",
 ]
