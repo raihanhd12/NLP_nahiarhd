@@ -524,7 +524,7 @@ nahiarhdNLP/
 └── demo.py                 # File demo penggunaan
 ```
 
-## 🆕 Changelog Versi 1.5.0
+## 🆕 Changelog Versi 1.4.0
 
 - 🚀 **[FITUR BARU]** Menambahkan `remove_emoji()` function untuk menghapus emoji dari teks
 - ✅ **[BARU]** TextCleaner sekarang memiliki method `clean_emoji()` untuk menghapus emoji
@@ -549,7 +549,7 @@ nahiarhdNLP/
 - ✅ Penambahan `DatasetLoader` untuk manajemen dataset terpusat
 - ✅ Dataset lengkap dengan 6 file berbeda (emoji, slang, stopwords, wordlist, KBBI, kamus)
 
-## 🆕 Changelog Versi 1.6.0 (Latest)
+## 🆕 Changelog Versi 1.4.3 (Latest)
 
 - 🚀 **[FITUR BARU]** Enable Functions untuk pembersihan dengan mempertahankan konten
 - ✅ **[BARU]** `enable_html_cleaning()` - Membersihkan HTML tags
