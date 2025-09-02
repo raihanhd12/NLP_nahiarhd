@@ -745,6 +745,115 @@ def pipeline(text: str, config: dict):
     return pipe.process(text)
 
 
+# New individual functions for word-preserving cleaning
+def clean_emails_preserve_text(text: str) -> str:
+    """Clean email addresses from text but preserve the text content.
+
+    Args:
+        text: Input text containing emails
+
+    Returns:
+        Text with emails cleaned but text preserved
+
+    Example:
+        >>> clean_emails_preserve_text("Contact john.doe@gmail.com")
+        "Contact john doe gmail com"
+    """
+    if not text:
+        return text
+
+    # Create TextCleaner with email cleaning enabled
+    cleaner = TextCleaner(clean_emails=True)
+    return cleaner.clean_emails(text, keep_text=True)
+
+
+def clean_phones_preserve_numbers(text: str) -> str:
+    """Clean phone numbers from text but preserve the numbers.
+
+    Args:
+        text: Input text containing phone numbers
+
+    Returns:
+        Text with phone formatting removed but numbers preserved
+
+    Example:
+        >>> clean_phones_preserve_numbers("Call (555) 123-4567")
+        "Call 5551234567"
+    """
+    if not text:
+        return text
+
+    # Create TextCleaner with phone cleaning enabled
+    cleaner = TextCleaner(clean_phones=True)
+    return cleaner.clean_phones(text, keep_numbers=True)
+
+
+def clean_currency_preserve_numbers(text: str) -> str:
+    """Clean currency symbols from text but preserve the numbers.
+
+    Args:
+        text: Input text containing currency
+
+    Returns:
+        Text with currency symbols removed but numbers preserved
+
+    Example:
+        >>> clean_currency_preserve_numbers("Price: $99.99")
+        "Price: 99.99"
+    """
+    if not text:
+        return text
+
+    # Create TextCleaner with currency cleaning enabled
+    cleaner = TextCleaner(clean_currency=True)
+    return cleaner.clean_currency(text, keep_numbers=True)
+
+
+def clean_all_preserve_words(text: str, **kwargs) -> str:
+    """Clean all elements from text while preserving important content.
+
+    Args:
+        text: Input text
+        **kwargs: Options for cleaning (clean_emails, clean_phones, clean_currency, etc.)
+
+    Returns:
+        Text with all specified elements cleaned but content preserved
+
+    Example:
+        >>> clean_all_preserve_words("Hello @user! Check #cars at https://google.com, contact john@gmail.com, call (555)123-4567, price $100", clean_emails=True, clean_phones=True, clean_currency=True)
+        "Hello user! Check cars at google, contact john gmail com, call 5551234567, price 100"
+    """
+    if not text:
+        return text
+
+    # Create TextCleaner with specified options
+    cleaner = TextCleaner(**kwargs)
+
+    # Apply all enabled cleanings
+    result = text
+
+    if kwargs.get("clean_emails", False):
+        result = cleaner.clean_emails(result, keep_text=True)
+
+    if kwargs.get("clean_phones", False):
+        result = cleaner.clean_phones(result, keep_numbers=True)
+
+    if kwargs.get("clean_currency", False):
+        result = cleaner.clean_currency(result, keep_numbers=True)
+
+    # Also apply standard cleanings if enabled
+    if kwargs.get("remove_urls", False):
+        result = cleaner.clean_urls(result)
+
+    if kwargs.get("remove_mentions", False):
+        result = cleaner.clean_mentions(result)
+
+    if kwargs.get("remove_hashtags", False):
+        result = cleaner.clean_hashtags(result)
+
+    return result
+
+
 def preprocess(
     text: str,
     remove_html: bool = True,

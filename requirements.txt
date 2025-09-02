@@ -3,3 +3,4 @@ Sastrawi>=1.0.1
 rich>=12.0.0
 build
 twine
+nahiarhdNLP

@@ -85,6 +85,109 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
+    def clean_emails(
+        self, text: str, keep_text: bool = True, force: bool = False
+    ) -> str:
+        """Extract or remove email addresses from text.
+
+        Args:
+            text: Input text
+            keep_text: If True, remove @ symbol from email but keep the text
+                      If False, remove entire email
+            force: Force cleaning even if clean_emails flag is False
+
+        Returns:
+            Text with emails processed
+        """
+        if not self.clean_emails and not force:
+            return text
+
+        if keep_text:
+            # Remove @ and . from emails but keep the text parts
+            # More comprehensive pattern to handle various email formats
+            email_pattern = r"([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})"
+            result = re.sub(email_pattern, r"\1 \2 \3", text)
+        else:
+            # Remove entire email
+            email_pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+            result = re.sub(email_pattern, "", text)
+
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
+
+    def clean_phones(
+        self, text: str, keep_numbers: bool = True, force: bool = False
+    ) -> str:
+        """Extract or remove phone numbers from text.
+
+        Args:
+            text: Input text
+            keep_numbers: If True, remove formatting but keep numbers
+                         If False, remove entire phone number
+            force: Force cleaning even if clean_phones flag is False
+
+        Returns:
+            Text with phone numbers processed
+        """
+        if not self.clean_phones and not force:
+            return text
+
+        result = text
+        if keep_numbers:
+            # Remove phone formatting but keep numbers using regex substitution
+            # Pattern to match phone numbers with formatting (more precise)
+            phone_pattern = r"(\+62|62|0)([\d\-\(\)]{8,})(?=\s|$)|(\([\d]{3,4}\)\s?[\d\-\(\)]{6,})(?=\s|$)|([\+\d][\d\-\(\)]{8,})(?=\s|$)"
+
+            def clean_phone_match(match):
+                if match.group(1):  # Indonesian format (+62/62/0)
+                    prefix = match.group(1)
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(2))
+                    return prefix + numbers
+                elif match.group(3):  # Parenthetical format like (021) 123-4567
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(3))
+                    return numbers
+                else:  # International format
+                    numbers = re.sub(r"[\-\(\)\s]", "", match.group(4))
+                    return numbers
+
+            result = re.sub(phone_pattern, clean_phone_match, text)
+        else:
+            # Remove entire phone numbers
+            phone_pattern = r"[\+]?[\d\-\(\)\s]{8,}\d"
+            result = re.sub(phone_pattern, "", text)
+
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
+
+    def clean_currency(
+        self, text: str, keep_numbers: bool = True, force: bool = False
+    ) -> str:
+        """Clean currency symbols from text.
+
+        Args:
+            text: Input text
+            keep_numbers: If True, remove currency symbols but keep numbers
+                         If False, remove entire currency mentions
+            force: Force cleaning even if clean_currency flag is False
+
+        Returns:
+            Text with currency processed
+        """
+        if not self.clean_currency and not force:
+            return text
+
+        if keep_numbers:
+            # Remove currency symbols but keep numbers
+            currency_pattern = r"([$€£¥₹Rp\.,])(\d+(?:[\.,]\d+)*)"
+            result = re.sub(currency_pattern, r"\2", text)
+        else:
+            # Remove entire currency mentions
+            currency_pattern = r"[$€£¥₹Rp\.,]?\d+(?:[\.,]\d+)*[$€£¥₹Rp]?"
+            result = re.sub(currency_pattern, "", text)
+
+        result = re.sub(r"\s+", " ", result).strip()
+        return result
+
     def clean_numbers(self, text: str, force: bool = False) -> str:
         """Remove numbers from text.
 
@@ -257,4 +360,8 @@ class TextCleaner:
             "remove_repeated_chars": self.remove_repeated_chars,
             "remove_special_chars": self.remove_special_chars,
             "remove_whitespace": self.remove_whitespace,
+            # New word-preserving cleaning options
+            "clean_emails": self.clean_emails,
+            "clean_phones": self.clean_phones,
+            "clean_currency": self.clean_currency,
         }

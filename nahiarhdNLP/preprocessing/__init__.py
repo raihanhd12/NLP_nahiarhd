@@ -7,7 +7,7 @@ including cleaning, normalization, tokenization, and linguistic processing.
 
 # Import all classes for advanced usage
 from .cleaning.text_cleaner import TextCleaner
-from .cleaning.text_cleaner_word import TextCleanerWord as WordTextCleaner
+from .cleaning.text_cleaner_word import TextCleanerWord
 from .linguistic.stemmer import Stemmer
 from .linguistic.stopwords import StopwordRemover
 from .normalization.emoji import EmojiConverter
@@ -73,7 +73,7 @@ __all__ = [
     "preprocess",
     # Classes
     "TextCleaner",
-    "WordTextCleaner",
+    "TextCleanerWord",
     "Stemmer",
     "StopwordRemover",
     "EmojiConverter",
@@ -87,4 +87,9 @@ __all__ = [
     "enable_email_cleaning",
     "enable_phone_cleaning",
     "enable_currency_cleaning",
+    # New individual functions
+    "clean_emails_preserve_text",
+    "clean_phones_preserve_numbers",
+    "clean_currency_preserve_numbers",
+    "clean_all_preserve_words",
 ]
