@@ -19,9 +19,9 @@ class TextCleanerWord:
         self.enable_url_cleaning = kwargs.get("enable_url_cleaning", True)
         self.enable_mention_cleaning = kwargs.get("enable_mention_cleaning", True)
         self.enable_hashtag_cleaning = kwargs.get("enable_hashtag_cleaning", True)
-        self.enable_email_cleaning = kwargs.get("enable_email_cleaning", False)
-        self.enable_phone_cleaning = kwargs.get("enable_phone_cleaning", False)
-        self.enable_currency_cleaning = kwargs.get("enable_currency_cleaning", False)
+        self.enable_email_cleaning = kwargs.get("enable_email_cleaning", True)
+        self.enable_phone_cleaning = kwargs.get("enable_phone_cleaning", True)
+        self.enable_currency_cleaning = kwargs.get("enable_currency_cleaning", True)
 
     def clean_urls(self, text: str, force: bool = False) -> str:
         """Remove URL protocols (http:// or https://) but keep the rest of the URL.
@@ -186,8 +186,8 @@ class TextCleanerWord:
 
         if keep_numbers:
             # Remove currency symbols but keep numbers
-            currency_pattern = r"([$€£¥₹Rp\.,])(\d+(?:[\.,]\d+)*)"
-            result = re.sub(currency_pattern, r"\2", text)
+            currency_pattern = r"(\$|€|£|¥|₹|Rp)(\s*)(\d+(?:[\.,]\d+)*)"
+            result = re.sub(currency_pattern, r"\3", text)
         else:
             # Remove entire currency mentions
             currency_pattern = r"[$€£¥₹Rp\.,]?\d+(?:[\.,]\d+)*[$€£¥₹Rp]?"

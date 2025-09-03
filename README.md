@@ -117,7 +117,7 @@ print(clean_result)
 # Output: "halo dunia yang indah"
 ```
 
-### 1.1. ✨ Enable Functions - Pembersihan dengan Mempertahankan Konten
+### 1.1. ✨ TextCleanerWord - Pembersihan dengan Mempertahankan Konten
 
 ```python
 from nahiarhdNLP.preprocessing import TextCleanerWord
@@ -126,45 +126,57 @@ cleaner = TextCleanerWord()
 
 # Membersihkan HTML tags
 html_text = "Hello <b>world</b>"
-clean_result = enable_html_cleaning(html_text)
+clean_result = cleaner.clean_html(html_text)
 print(clean_result)
 # Output: "Hello world"
 
 # Membersihkan URL
 url_text = "Kunjungi https://example.com"
-clean_result = enable_url_cleaning(url_text)
+clean_result = cleaner.clean_urls(url_text)
 print(clean_result)
 # Output: "Kunjungi example.com"
 
 # Membersihkan mentions
 mention_text = "Halo @user123 apa kabar?"
-clean_result = enable_mention_cleaning(mention_text)
+clean_result = cleaner.clean_mentions(mention_text)
 print(clean_result)
 # Output: "Halo user123 apa kabar?"
 
 # Membersihkan hashtags
 hashtag_text = "Hari ini #senin #libur #weekend"
-clean_result = enable_hashtag_cleaning(hashtag_text)
+clean_result = cleaner.clean_hashtags(hashtag_text)
 print(clean_result)
 # Output: "Hari ini senin libur weekend"
 
 # Membersihkan email
 email_text = "Kirim email ke test@example.com"
-clean_result = enable_email_cleaning(email_text)
+clean_result = cleaner.clean_emails(email_text)
 print(clean_result)
 # Output: "Kirim email ke test example com"
 
 # Membersihkan nomor telepon
 phone_text = "Hubungi saya di 08123456789"
-clean_result = enable_phone_cleaning(phone_text)
+clean_result = cleaner.clean_phones(phone_text)
 print(clean_result)
 # Output: "Hubungi saya di 08123456789"
 
 # Membersihkan mata uang
 currency_text = "Harga barang adalah $100"
-clean_result = enable_currency_cleaning(currency_text)
+clean_result = cleaner.clean_currency(currency_text)
 print(clean_result)
 # Output: "Harga barang adalah 100"
+
+# Mengatur opsi pembersihan
+cleaner_extended = TextCleanerWord(
+    enable_email_cleaning=False,  # Disable email cleaning
+    enable_phone_cleaning=True,   # Enable phone cleaning
+    enable_currency_cleaning=True  # Enable currency cleaning
+)
+
+# Menggunakan opsi yang berbeda
+result = cleaner_extended.clean_emails("Contact me at test@example.com")
+print(result)  # Email tidak akan dibersihkan karena disabled
+# Output: "Contact me at test@example.com"
 ```
 
 ### 2. ✏️ SpellCorrector - Koreksi Ejaan & Normalisasi Slang
@@ -549,7 +561,7 @@ nahiarhdNLP/
 - ✅ Penambahan `DatasetLoader` untuk manajemen dataset terpusat
 - ✅ Dataset lengkap dengan 6 file berbeda (emoji, slang, stopwords, wordlist, KBBI, kamus)
 
-## 🆕 Changelog Versi 1.4.4 (Latest)
+## 🆕 Changelog Versi 1.4.5 (Latest)
 
 - 🚀 **[FITUR BARU]** Enable Functions untuk pembersihan dengan mempertahankan konten
 - ✅ **[BARU]** `enable_html_cleaning()` - Membersihkan HTML tags

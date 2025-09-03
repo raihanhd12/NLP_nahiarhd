@@ -374,7 +374,7 @@ def enable_html_cleaning(text: str) -> str:
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_html_cleaning(text)
+    return _get_text_cleaner_word().clean_html(text)
 
 
 def enable_url_cleaning(text: str) -> str:
@@ -389,12 +389,12 @@ def enable_url_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_url_cleaning
         >>> enable_url_cleaning("Kunjungi https://example.com")
-        "Kunjungi "
+        "Kunjungi example.com"
     """
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_url_cleaning(text)
+    return _get_text_cleaner_word().clean_urls(text)
 
 
 def enable_mention_cleaning(text: str) -> str:
@@ -409,12 +409,12 @@ def enable_mention_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_mention_cleaning
         >>> enable_mention_cleaning("Halo @user123 apa kabar?")
-        "Halo  apa kabar?"
+        "Halo user123 apa kabar?"
     """
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_mention_cleaning(text)
+    return _get_text_cleaner_word().clean_mentions(text)
 
 
 def enable_hashtag_cleaning(text: str) -> str:
@@ -429,12 +429,12 @@ def enable_hashtag_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_hashtag_cleaning
         >>> enable_hashtag_cleaning("Hari ini #senin #libur #weekend")
-        "Hari ini  "
+        "Hari ini senin libur weekend"
     """
     if not text:
         return text
 
-    return _get_text_cleaner_word().enable_hashtag_cleaning(text)
+    return _get_text_cleaner_word().clean_hashtags(text)
 
 
 def enable_email_cleaning(text: str) -> str:
@@ -449,14 +449,12 @@ def enable_email_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_email_cleaning
         >>> enable_email_cleaning("Kirim email ke test@example.com")
-        "Kirim email ke "
+        "Kirim email ke test example com"
     """
     if not text:
         return text
 
-    # Create TextCleanerWord with email cleaning enabled
-    cleaner = WordTextCleaner(enable_email_cleaning=True)
-    return cleaner.clean_emails(text, keep_text=False)
+    return _get_text_cleaner_word().clean_emails(text)
 
 
 def enable_phone_cleaning(text: str) -> str:
@@ -471,14 +469,12 @@ def enable_phone_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_phone_cleaning
         >>> enable_phone_cleaning("Hubungi saya di 08123456789")
-        "Hubungi saya di "
+        "Hubungi saya di 08123456789"
     """
     if not text:
         return text
 
-    # Create TextCleanerWord with phone cleaning enabled
-    cleaner = WordTextCleaner(enable_phone_cleaning=True)
-    return cleaner.clean_phones(text, keep_numbers=False)
+    return _get_text_cleaner_word().clean_phones(text)
 
 
 def enable_currency_cleaning(text: str) -> str:
@@ -493,14 +489,12 @@ def enable_currency_cleaning(text: str) -> str:
     Example:
         >>> from src.preprocessing import enable_currency_cleaning
         >>> enable_currency_cleaning("Harga barang adalah $100")
-        "Harga barang adalah "
+        "Harga barang adalah 100"
     """
     if not text:
         return text
 
-    # Create TextCleanerWord with currency cleaning enabled
-    cleaner = WordTextCleaner(enable_currency_cleaning=True)
-    return cleaner.clean_currency(text, keep_numbers=False)
+    return _get_text_cleaner_word().clean_currency(text)
 
 
 def emoji_to_words(text: str) -> str:
