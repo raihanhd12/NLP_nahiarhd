@@ -575,7 +575,7 @@ nahiarhdNLP/
 - ✅ Penambahan `DatasetLoader` untuk manajemen dataset terpusat
 - ✅ Dataset lengkap dengan 6 file berbeda (emoji, slang, stopwords, wordlist, KBBI, kamus)
 
-## 🆕 Changelog Versi 1.4.7 (Latest)
+## 🆕 Changelog Versi 1.4.8 (Latest)
 
 - 🚀 **[FITUR BARU]** Enable Functions untuk pembersihan dengan mempertahankan konten
 - ✅ **[BARU]** `enable_html_cleaning()` - Membersihkan HTML tags
