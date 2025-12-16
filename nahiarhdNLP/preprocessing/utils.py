@@ -612,9 +612,11 @@ class Pipeline:
 
     def _build_functions_from_config(self):
         """Build functions list dari config dictionary."""
+        import importlib
+
         functions = []
 
-        # Mapping config key ke function
+        # Explicit legacy mapping (keep for backward compatibility)
         function_mapping = {
             "remove_html": globals().get("remove_html"),
             "remove_emoji": globals().get("remove_emoji"),
@@ -634,6 +636,10 @@ class Pipeline:
             "remove_stopwords": globals().get("remove_stopwords"),
             "stem_text": globals().get("stem_text"),
             "tokenize": globals().get("tokenize"),
+            # Replacement helpers
+            "replace_email": globals().get("replace_email_with_token"),
+            "replace_link": globals().get("replace_link_with_token"),
+            "replace_user": globals().get("replace_user_with_token"),
             "enable_html_cleaning": globals().get("enable_html_cleaning"),
             "enable_url_cleaning": globals().get("enable_url_cleaning"),
             "enable_mention_cleaning": globals().get("enable_mention_cleaning"),
@@ -643,10 +649,49 @@ class Pipeline:
             "enable_currency_cleaning": globals().get("enable_currency_cleaning"),
         }
 
-        # Build functions berdasarkan config
+        def resolve_callable(key, val):
+            # If the config value is directly a callable, use it
+            if callable(val):
+                return val
+
+            # Prefer legacy mapping when present
+            if key in function_mapping and function_mapping[key]:
+                return function_mapping[key]
+
+            # Try resolving by name (first try value if it's a string, then key)
+            candidates = []
+            if isinstance(val, str) and val:
+                candidates.append(val)
+            if isinstance(key, str):
+                candidates.append(key)
+
+            for name in candidates:
+                # look up in globals
+                func = globals().get(name)
+                if callable(func):
+                    return func
+
+                # dotted import path support: module.submodule.func
+                if isinstance(name, str) and "." in name:
+                    module_name, attr = name.rsplit(".", 1)
+                    try:
+                        module = importlib.import_module(module_name)
+                        func = getattr(module, attr, None)
+                        if callable(func):
+                            return func
+                    except Exception:
+                        continue
+
+            return None
+
+        # Build functions berdasarkan config (preserve insertion order)
         for key, enabled in self.config.items():
-            if enabled and key in function_mapping and function_mapping[key]:
-                functions.append(function_mapping[key])
+            if not enabled:
+                continue
+
+            func = resolve_callable(key, enabled)
+            if func:
+                functions.append(func)
 
         self.functions = tuple(functions)
 
