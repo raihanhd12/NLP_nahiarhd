@@ -92,4 +92,8 @@ __all__ = [
     "clean_phones_preserve_numbers",
     "clean_currency_preserve_numbers",
     "clean_all_preserve_words",
+    # Text replacement functions
+    "replace_email_with_token",
+    "replace_link_with_token",
+    "replace_user_with_token",
 ]
