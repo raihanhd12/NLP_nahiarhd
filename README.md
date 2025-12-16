@@ -381,9 +381,9 @@ print(result)
 # Replace emails, links and mentions with tokens via config
 from nahiarhdNLP.preprocessing import pipeline
 
-cfg = {"replace_all": True}
+cfg = {"replace_link": True}
 print(pipeline("Contact john.doe@gmail.com visit https://example.com @alice", cfg))
-# Output: "<email> visit <link> <user>"
+# Output: "Contact john.doe@gmail.com visit <link> @alice"
 ````
 
 #### 📝 Available Functions untuk Pipeline
@@ -408,7 +408,7 @@ enable_html_cleaning, enable_url_cleaning, enable_mention_cleaning,
 enable_hashtag_cleaning, enable_email_cleaning, enable_phone_cleaning,
 enable_currency_cleaning
 # Replacement helpers (new)
-replace_email, replace_link, replace_user, replace_all
+replace_email, replace_link, replace_user
 ```
 
 ### 8. 🎛️ Preprocess Function (Backward Compatibility)
@@ -575,7 +575,7 @@ nahiarhdNLP/
 - ✅ Penambahan `DatasetLoader` untuk manajemen dataset terpusat
 - ✅ Dataset lengkap dengan 6 file berbeda (emoji, slang, stopwords, wordlist, KBBI, kamus)
 
-## 🆕 Changelog Versi 1.4.8 (Latest)
+## 🆕 Changelog Versi 1.4.9 (Latest)
 
 - 🚀 **[FITUR BARU]** Enable Functions untuk pembersihan dengan mempertahankan konten
 - ✅ **[BARU]** `enable_html_cleaning()` - Membersihkan HTML tags
