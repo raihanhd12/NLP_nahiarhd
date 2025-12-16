@@ -614,6 +614,12 @@ class Pipeline:
         """Build functions list dari config dictionary."""
         import importlib
 
+        # If config is not set (None), ensure functions is an empty tuple and return
+        # to avoid calling .items() on None which triggers static analysis errors.
+        if self.config is None:
+            self.functions = tuple()
+            return
+
         functions = []
 
         # Explicit legacy mapping (keep for backward compatibility)
@@ -920,6 +926,9 @@ def preprocess(
     enable_email_cleaning: bool = False,
     enable_phone_cleaning: bool = False,
     enable_currency_cleaning: bool = False,
+    replace_email: bool = False,
+    replace_link: bool = False,
+    replace_user: bool = False,
 ) -> Union[str, List[str]]:
     """
     Fungsi preprocess dengan parameter eksplisit untuk setiap step.
@@ -1014,6 +1023,12 @@ def preprocess(
         functions.append(globals()["enable_phone_cleaning"])
     if enable_currency_cleaning:
         functions.append(globals()["enable_currency_cleaning"])
+    if replace_email:
+        functions.append(globals()["replace_email_with_token"])
+    if replace_link:
+        functions.append(globals()["replace_link_with_token"])
+    if replace_user:
+        functions.append(globals()["replace_user_with_token"])
 
     # Gunakan Pipeline baru untuk proses
     if functions:
