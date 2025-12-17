@@ -187,16 +187,17 @@ class TextCleaner:
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
-    def remove_emoji(self, text: str) -> str:
+    def remove_emoji(self, text: str, force: bool = False) -> str:
         """Remove emoji from text.
 
         Args:
             text: Input text with emoji
+            force: Force remove emoji even if remove_emoji flag is False
 
         Returns:
             Text with emoji removed
         """
-        if not self.remove_emoji:
+        if not self.remove_emoji and not force:
             return text
 
         # Pattern untuk emoji (Unicode ranges)
