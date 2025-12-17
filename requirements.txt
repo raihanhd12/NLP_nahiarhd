@@ -1,6 +1,8 @@
-pandas>=1.3.0
-Sastrawi>=1.0.1
-rich>=12.0.0
+pandas
+Sastrawi
+rich
 build
 twine
 nahiarhdNLP
+pytest
+pytest-cov

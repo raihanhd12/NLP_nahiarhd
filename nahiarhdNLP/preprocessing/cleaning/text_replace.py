@@ -5,45 +5,62 @@ This module provides simple, well-documented functions used by the pipeline.
 """
 
 import re
-from typing import Pattern
-
-_EMAIL_RE: Pattern = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
-# simple URL pattern covering http(s) and www
-_URL_RE: Pattern = re.compile(
-    r"(http[s]?://(?:[A-Za-z0-9$-_@.&+!*'(),]|(?:%[0-9A-Fa-f]{2}))+|www\.[A-Za-z0-9.-]+(?:/[A-Za-z0-9._%+-]*)*)"
-)
-_MENTION_RE: Pattern = re.compile(r"@([A-Za-z0-9_\.\-]+)")
 
 
-def replace_email_with_token(text: str, token: str = "<email>") -> str:
-    """Replace email addresses in `text` with `token`.
+class TextReplace:
+    def __init__(self, **kwargs):
+        self.replace_email = kwargs.get("replace_email", True)
+        self.replace_link = kwargs.get("replace_link", True)
+        self.replace_user = kwargs.get("replace_user", True)
 
-    Example:
-        replace_email_with_token("Contact me at john.doe@gmail.com")
-        -> "Contact me at <email>"
-    """
-    if not text:
-        return text
-    return _EMAIL_RE.sub(token, text)
+    def replace_email(self, text: str, force: bool = False) -> str:
+        """Replace email addresses in `text` with `token`.
 
+        Example:
+            replace_email("Contact me at john.doe@gmail.com")
+            -> "Contact me at <email>"
+        """
+        if not self.replace_email and not force:
+            return text
 
-def replace_link_with_token(text: str, token: str = "<link>") -> str:
-    """Replace URLs in `text` with `token`.
+        email_pattern = re.compile(
+            r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"
+        )
+        result = re.sub(email_pattern, "<email>", text)
+        return result
 
-    Example:
-        replace_link_with_token("visit https://example.com") -> "visit <link>"
-    """
-    if not text:
-        return text
-    return _URL_RE.sub(token, text)
+    def replace_link(self, text: str, force: bool = False) -> str:
+        """Replace URLs in `text` with `token`.
 
+        Example:
+            replace_link("Visit http://example.com for more info")
+            -> "Visit <link> for more info"
+        """
+        if not self.replace_link and not force:
+            return text
 
-def replace_user_with_token(text: str, token: str = "<user>") -> str:
-    """Replace user mentions (@username) in `text` with `token`.
+        url_pattern = re.compile(r"(https?://[^\s]+|www\.[^\s]+)")
+        result = re.sub(url_pattern, "<link>", text)
+        return result
 
-    Example:
-        replace_user_with_token("Hello @alice") -> "Hello <user>"
-    """
-    if not text:
-        return text
-    return _MENTION_RE.sub(token, text)
+    def replace_user(self, text: str, force: bool = False) -> str:
+        """Replace user mentions in `text` with `token`.
+
+        Example:
+            replace_user("Hello @user1 and @user2")
+            -> "Hello <user> and <user>"
+        """
+        if not self.replace_user and not force:
+            return text
+
+        user_pattern = re.compile(r"@\w+")
+        result = re.sub(user_pattern, "<user>", text)
+        return result
+
+    def get_options(self) -> dict:
+        """Get current replacement options."""
+        return {
+            "replace_email": self.replace_email,
+            "replace_link": self.replace_link,
+            "replace_user": self.replace_user,
+        }
