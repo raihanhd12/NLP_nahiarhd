@@ -98,34 +98,88 @@ class Pipeline:
         # mapping step -> callable (internal only)
         # Use class methods bound at call-time to avoid instance attributes shadowing methods
         function_mapping = {
-            "remove_html": lambda t, _m=TextCleaner.remove_html: _m(_get_text_cleaner(), t),
-            "remove_urls": lambda t, _m=TextCleaner.remove_urls: _m(_get_text_cleaner(), t),
-            "remove_mentions": lambda t, _m=TextCleaner.remove_mentions: _m(_get_text_cleaner(), t),
-            "remove_hashtags": lambda t, _m=TextCleaner.remove_hashtags: _m(_get_text_cleaner(), t),
-            "remove_punctuation": lambda t, _m=TextCleaner.remove_punctuation: _m(_get_text_cleaner(), t),
-            "remove_emoji": lambda t, _m=TextCleaner.remove_emoji: _m(_get_text_cleaner(), t),
-            "remove_lowercase": lambda t, _m=TextCleaner.remove_lowercase: _m(_get_text_cleaner(), t),
-            "remove_extra_spaces": lambda t, _m=TextCleaner.remove_extra_spaces: _m(_get_text_cleaner(), t),
-            "remove_repeated_chars": lambda t, _m=TextCleaner.remove_repeated_chars: _m(_get_text_cleaner(), t),
-            "remove_special_chars": lambda t, _m=TextCleaner.remove_special_chars: _m(_get_text_cleaner(), t),
-            "remove_whitespace": lambda t, _m=TextCleaner.remove_whitespace: _m(_get_text_cleaner(), t),
-            "remove_emails": lambda t, _m=TextCleaner.remove_emails: _m(_get_text_cleaner(), t),
-            "remove_phones": lambda t, _m=TextCleaner.remove_phones: _m(_get_text_cleaner(), t),
-            "remove_currency": lambda t, _m=TextCleaner.remove_currency: _m(_get_text_cleaner(), t),
-            "remove_numbers": lambda t, _m=TextCleaner.remove_numbers: _m(_get_text_cleaner(), t),
-            "clean_urls": lambda t, _m=WordTextCleaner.clean_urls: _m(_get_text_cleaner_word(), t),
-            "clean_mentions": lambda t, _m=WordTextCleaner.clean_mentions: _m(_get_text_cleaner_word(), t),
-            "clean_hashtags": lambda t, _m=WordTextCleaner.clean_hashtags: _m(_get_text_cleaner_word(), t),
-            "clean_html": lambda t, _m=WordTextCleaner.clean_html: _m(_get_text_cleaner_word(), t),
-            "replace_email": lambda t, _m=TextReplace.replace_email: _m(_get_text_replace(), t),
-            "replace_link": lambda t, _m=TextReplace.replace_link: _m(_get_text_replace(), t),
-            "replace_user": lambda t, _m=TextReplace.replace_user: _m(_get_text_replace(), t),
+            "remove_html": lambda t, _m=TextCleaner.remove_html: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_urls": lambda t, _m=TextCleaner.remove_urls: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_mentions": lambda t, _m=TextCleaner.remove_mentions: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_hashtags": lambda t, _m=TextCleaner.remove_hashtags: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_punctuation": lambda t, _m=TextCleaner.remove_punctuation: _m(
+                _get_text_cleaner(), t, force=True
+            ),
+            "remove_emoji": lambda t, _m=TextCleaner.remove_emoji: _m(
+                _get_text_cleaner(), t, force=True
+            ),
+            "remove_lowercase": lambda t, _m=TextCleaner.remove_lowercase: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_extra_spaces": lambda t, _m=TextCleaner.remove_extra_spaces: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_repeated_chars": lambda t, _m=TextCleaner.remove_repeated_chars: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_special_chars": lambda t, _m=TextCleaner.remove_special_chars: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_whitespace": lambda t, _m=TextCleaner.remove_whitespace: _m(
+                _get_text_cleaner(), t
+            ),
+            "remove_emails": lambda t, _m=TextCleaner.remove_emails: _m(
+                _get_text_cleaner(), t, keep_text=False, force=True
+            ),
+            "remove_phones": lambda t, _m=TextCleaner.remove_phones: _m(
+                _get_text_cleaner(), t, keep_numbers=False, force=True
+            ),
+            "remove_currency": lambda t, _m=TextCleaner.remove_currency: _m(
+                _get_text_cleaner(), t, keep_numbers=False, force=True
+            ),
+            "remove_numbers": lambda t, _m=TextCleaner.remove_numbers: _m(
+                _get_text_cleaner(), t, force=True
+            ),
+            "clean_urls": lambda t, _m=WordTextCleaner.clean_urls: _m(
+                _get_text_cleaner_word(), t
+            ),
+            "clean_mentions": lambda t, _m=WordTextCleaner.clean_mentions: _m(
+                _get_text_cleaner_word(), t
+            ),
+            "clean_hashtags": lambda t, _m=WordTextCleaner.clean_hashtags: _m(
+                _get_text_cleaner_word(), t
+            ),
+            "clean_html": lambda t, _m=WordTextCleaner.clean_html: _m(
+                _get_text_cleaner_word(), t
+            ),
+            "replace_email": lambda t, _m=TextReplace.replace_email: _m(
+                _get_text_replace(), t
+            ),
+            "replace_link": lambda t, _m=TextReplace.replace_link: _m(
+                _get_text_replace(), t
+            ),
+            "replace_user": lambda t, _m=TextReplace.replace_user: _m(
+                _get_text_replace(), t
+            ),
             "stem": lambda t, _m=Stemmer.stem: _m(_get_stemmer(), t),
-            "stopword": lambda t, _m=StopwordRemover.remove_stopwords: _m(_get_stopword(), t),
-            "emoji_to_text": lambda t, _m=EmojiConverter.emoji_to_text_convert: _m(_get_emoji(), t),
-            "text_to_emoji": lambda t, _m=EmojiConverter.text_to_emoji_convert: _m(_get_emoji(), t),
-            "spell_corrector_word": lambda t, _m=SpellCorrector.correct_word: _m(_get_spell_corrector(), t),
-            "spell_corrector_sentence": lambda t, _m=SpellCorrector.correct_sentence: _m(_get_spell_corrector(), t),
+            "stopword": lambda t, _m=StopwordRemover.remove_stopwords: _m(
+                _get_stopword(), t
+            ),
+            "emoji_to_text": lambda t, _m=EmojiConverter.emoji_to_text_convert: _m(
+                _get_emoji(), t
+            ),
+            "text_to_emoji": lambda t, _m=EmojiConverter.text_to_emoji_convert: _m(
+                _get_emoji(), t
+            ),
+            "spell_corrector_word": lambda t, _m=SpellCorrector.correct_word: _m(
+                _get_spell_corrector(), t
+            ),
+            "spell_corrector_sentence": lambda t, _m=SpellCorrector.correct_sentence: _m(
+                _get_spell_corrector(), t
+            ),
             "tokenizer": lambda t, _m=Tokenizer.tokenize: _m(_get_tokenizer(), t),
         }
 
@@ -168,6 +222,93 @@ class Pipeline:
 
     def get_enabled_steps(self) -> list:
         return [k for k, v in self.config.items() if v]
+
+    @staticmethod
+    def get_available_steps() -> dict:
+        """Get all available preprocessing steps with their descriptions.
+
+        Returns:
+            dict: Dictionary mapping step names to their descriptions
+        """
+        return {
+            # Text Cleaning - HTML & Tags
+            "clean_html": "Remove HTML tags from text",
+            # Text Cleaning - URLs
+            "remove_urls": "Remove complete URLs from text",
+            "clean_urls": "Remove URL protocols (http://, https://) but keep domain",
+            # Text Cleaning - Social Media
+            "remove_mentions": "Remove @mentions completely",
+            "clean_mentions": "Remove @ symbol but keep username",
+            "remove_hashtags": "Remove #hashtags completely",
+            "clean_hashtags": "Remove # symbol but keep tag text",
+            # Text Cleaning - Content Removal
+            "remove_emoji": "Remove all emoji characters",
+            "remove_punctuation": "Remove punctuation marks",
+            "remove_numbers": "Remove all numbers",
+            "remove_emails": "Remove email addresses",
+            "remove_phones": "Remove phone numbers",
+            "remove_currency": "Remove currency symbols",
+            # Text Cleaning - Text Normalization
+            "remove_special_chars": "Remove special characters",
+            "remove_extra_spaces": "Normalize whitespace (multiple spaces to single)",
+            "remove_repeated_chars": "Normalize repeated characters (e.g., 'haiiii' → 'haii')",
+            "remove_whitespace": "Clean tabs, newlines, carriage returns",
+            "remove_lowercase": "Convert text to lowercase",
+            # Text Normalization
+            "emoji_to_text": "Convert emojis to text descriptions",
+            "text_to_emoji": "Convert text descriptions to emojis",
+            "spell_corrector_word": "Correct spelling and slang for single words",
+            "spell_corrector_sentence": "Correct spelling and slang for entire sentences",
+            # Linguistic Processing
+            "stem": "Apply Indonesian stemming (reduce to root form)",
+            "stopword": "Remove Indonesian stopwords",
+            "tokenizer": "Tokenize text into list of tokens",
+            # Text Replacement
+            "replace_email": "Replace email addresses with <email> token",
+            "replace_link": "Replace URLs with <link> token",
+            "replace_user": "Replace @mentions with <user> token",
+        }
+
+    @staticmethod
+    def get_available_steps_by_category() -> dict:
+        """Get all available preprocessing steps organized by category.
+
+        Returns:
+            dict: Dictionary mapping categories to lists of step names
+        """
+        return {
+            "text_cleaning_html": ["clean_html"],
+            "text_cleaning_urls": ["remove_urls", "clean_urls"],
+            "text_cleaning_social": [
+                "remove_mentions",
+                "clean_mentions",
+                "remove_hashtags",
+                "clean_hashtags",
+            ],
+            "text_cleaning_content": [
+                "remove_emoji",
+                "remove_punctuation",
+                "remove_numbers",
+                "remove_emails",
+                "remove_phones",
+                "remove_currency",
+            ],
+            "text_cleaning_normalization": [
+                "remove_special_chars",
+                "remove_extra_spaces",
+                "remove_repeated_chars",
+                "remove_whitespace",
+                "remove_lowercase",
+            ],
+            "text_normalization": [
+                "emoji_to_text",
+                "text_to_emoji",
+                "spell_corrector_word",
+                "spell_corrector_sentence",
+            ],
+            "linguistic_processing": ["stem", "stopword", "tokenizer"],
+            "text_replacement": ["replace_email", "replace_link", "replace_user"],
+        }
 
     def __call__(self, text: str):
         return self.process(text)
