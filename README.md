@@ -127,6 +127,7 @@ print(result)
 | **Special Char Removal** | Remove special characters  | `remove_special_chars`  |
 | **Extra Spaces**         | Normalize whitespace       | `remove_extra_spaces`   |
 | **Repeated Chars**       | Normalize repeated chars   | `remove_repeated_chars` |
+| **Whitespace Cleaning**  | Clean tabs, newlines, etc. | `remove_whitespace`     |
 
 ### 📝 Text Normalization
 
@@ -266,6 +267,59 @@ print(f"Updated Output: {pipeline.process(text)}")
 # Check enabled steps
 print(f"Enabled steps: {pipeline.get_enabled_steps()}")
 # Output: ['clean_html', 'remove_urls', 'remove_punctuation']
+```
+
+#### Example 1.4: Feature Discovery
+
+```python
+from nahiarhdNLP.preprocessing import Pipeline
+
+# Get all available features
+all_features = Pipeline.get_available_steps()
+
+print("All Available Features:")
+for feature_name, description in sorted(all_features.items()):
+    print(f"  {feature_name:25} - {description}")
+
+print(f"\nTotal Features: {len(all_features)}")
+
+# Get features organized by category
+features_by_category = Pipeline.get_available_steps_by_category()
+
+print("\nFeatures by Category:")
+for category, feature_names in features_by_category.items():
+    print(f"\n{category}:")
+    for feature_name in feature_names:
+        description = all_features.get(feature_name, "No description")
+        print(f"  {feature_name:25} - {description}")
+```
+
+**Output:**
+
+```
+All Available Features:
+  clean_hashtags           - Remove # symbol but keep tag text
+  clean_html               - Remove HTML tags from text
+  clean_mentions           - Remove @ symbol but keep username
+  clean_urls               - Remove URL protocols (http://, https://) but keep domain
+  emoji_to_text            - Convert emojis to Indonesian text description
+  remove_currency          - Remove currency symbols
+  remove_emails            - Remove email addresses
+  remove_emoji             - Remove all emoji characters
+  ... (28 features total)
+
+Total Features: 28
+
+Features by Category:
+
+HTML & Tags:
+  clean_html               - Remove HTML tags from text
+
+URLs:
+  remove_urls              - Remove complete URLs from text
+  clean_urls               - Remove URL protocols (http://, https://) but keep domain
+
+... (8 categories total)
 ```
 
 ---
