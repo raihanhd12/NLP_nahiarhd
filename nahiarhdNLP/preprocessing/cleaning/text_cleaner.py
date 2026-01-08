@@ -82,9 +82,9 @@ class TextCleaner:
         if not self.remove_hashtags and not force:
             return text
 
-        # Pattern untuk hashtags
+        # Pattern untuk hashtags - replace with space to preserve word boundaries
         hashtag_pattern = r"#\w+"
-        result = re.sub(hashtag_pattern, "", text)
+        result = re.sub(hashtag_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
