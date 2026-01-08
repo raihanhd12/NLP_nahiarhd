@@ -44,9 +44,9 @@ class TextCleaner:
         if not self.remove_urls and not force:
             return text
 
-        # Pattern untuk URL
+        # Pattern untuk URL - replace with space to preserve word boundaries
         url_pattern = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-        result = re.sub(url_pattern, "", text)
+        result = re.sub(url_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -63,9 +63,9 @@ class TextCleaner:
         if not self.remove_mentions and not force:
             return text
 
-        # Pattern untuk mentions
+        # Pattern untuk mentions - replace with space to preserve word boundaries
         mention_pattern = r"@\w+"
-        result = re.sub(mention_pattern, "", text)
+        result = re.sub(mention_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -101,9 +101,9 @@ class TextCleaner:
         if not self.remove_punctuation and not force:
             return text
 
-        # Pattern untuk punctuation
+        # Pattern untuk punctuation - replace with space to preserve word boundaries
         punctuation_pattern = r"[^\w\s]"
-        result = re.sub(punctuation_pattern, "", text)
+        result = re.sub(punctuation_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -181,9 +181,9 @@ class TextCleaner:
         if not self.remove_html and not force:
             return text
 
-        # Pattern untuk HTML tags
+        # Pattern untuk HTML tags - replace with space to preserve word boundaries
         html_pattern = r"<[^>]+>"
-        result = re.sub(html_pattern, "", text)
+        result = re.sub(html_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -203,7 +203,7 @@ class TextCleaner:
         # Pattern untuk emoji (Unicode ranges)
         # Menangkap semua karakter emoji berdasarkan Unicode blocks
         emoji_pattern = r"[\U0001F600-\U0001F64F]|[\U0001F300-\U0001F5FF]|[\U0001F680-\U0001F6FF]|[\U0001F700-\U0001F77F]|[\U0001F780-\U0001F7FF]|[\U0001F800-\U0001F8FF]|[\U0001F900-\U0001F9FF]|[\U0001FA00-\U0001FA6F]|[\U0001FA70-\U0001FAFF]|[\U00002600-\U000026FF]|[\U00002700-\U000027BF]"
-        result = re.sub(emoji_pattern, "", text)
+        result = re.sub(emoji_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -339,9 +339,9 @@ class TextCleaner:
         if not self.remove_numbers and not force:
             return text
 
-        # Pattern untuk numbers
+        # Pattern untuk numbers - replace with space to preserve word boundaries
         number_pattern = r"\d+"
-        result = re.sub(number_pattern, "", text)
+        result = re.sub(number_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 

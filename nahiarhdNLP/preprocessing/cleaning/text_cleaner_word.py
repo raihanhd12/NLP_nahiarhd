@@ -52,9 +52,9 @@ class TextCleanerWord:
         if not self.clean_mentions and not force:
             return text
 
-        # Pattern untuk mentions, remove @ but keep the word
+        # Pattern untuk mentions, remove @ but keep the word with space
         mention_pattern = r"@(\w+)"
-        result = re.sub(mention_pattern, r"\1", text)
+        result = re.sub(mention_pattern, r" \1", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -71,9 +71,9 @@ class TextCleanerWord:
         if not self.clean_hashtags and not force:
             return text
 
-        # Pattern untuk hashtags, remove # but keep the word
+        # Pattern untuk hashtags, remove # but keep the word with space
         hashtag_pattern = r"#(\w+)"
-        result = re.sub(hashtag_pattern, r"\1", text)
+        result = re.sub(hashtag_pattern, r" \1", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
@@ -90,9 +90,9 @@ class TextCleanerWord:
         if not self.clean_html and not force:
             return text
 
-        # Pattern untuk HTML tags
+        # Pattern untuk HTML tags - replace with space to preserve word boundaries
         html_pattern = r"<[^>]+>"
-        result = re.sub(html_pattern, "", text)
+        result = re.sub(html_pattern, " ", text)
         result = re.sub(r"\s+", " ", result).strip()
         return result
 
